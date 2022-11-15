@@ -59,6 +59,69 @@ local is_callable = function(obj)
     return type(obj) == "function" or (type(obj) == "table" and obj.__call)
 end
 
+---@param args neotest.RunArgs
+---@return neotest.RunSpec | nil
+function NeotestAdapter.build_spec(args)
+    local position = args.tree:data()
+    local results_path = async.fn.tempname()
+
+    local binary = get_pest_cmd()
+
+    local command = vim.tbl_flatten({
+        binary,
+        position.name ~= "tests" and position.path,
+        "--log-junit=" .. results_path,
+    })
+
+    if position.type == "test" then
+        local script_args = vim.tbl_flatten({
+            "--filter",
+            position.name,
+        })
+
+        command = vim.tbl_flatten({
+            command,
+            script_args,
+        })
+    end
+
+    return {
+        command = command,
+        context = {
+            results_path = results_path,
+        },
+    }
+end
+
+---@async
+---@param spec neotest.RunSpec
+---@param result neotest.StrategyResult
+---@param tree neotest.Tree
+---@return neotest.Result[]
+function NeotestAdapter.results(test, result, tree)
+  local output_file = test.context.results_path
+
+  local ok, data = pcall(lib.files.read, output_file)
+  if not ok then
+    logger.error("No test output file found:", output_file)
+    return {}
+  end
+
+  local ok, parsed_data = pcall(lib.xml.parse, data)
+  if not ok then
+    logger.error("Failed to parse test output:", output_file)
+    return {}
+  end
+
+  local ok, results = pcall(utils.get_test_results, parsed_data, output_file)
+  if not ok then
+    logger.error("Could not get test results", output_file)
+    return {}
+  end
+
+  return results
+end
+
 setmetatable(NeotestAdapter, {
     __call = function(_, opts)
         if is_callable(opts.pest_cmd) then
