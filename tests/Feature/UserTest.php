@@ -1,12 +1,18 @@
 <?php
 
+/**
+ * @var mixed $this
+ */
+
 use TestProject\User;
 
 uses()->group('file group');
 
 $makeUser = fn () => new User(18, 'John');
 
-beforeEach(fn () => $this->sut = $makeUser());
+beforeEach(function () use ($makeUser) {
+    $this->sut = $makeUser();
+});
 
 test('class constructor')
     ->expect($makeUser)
