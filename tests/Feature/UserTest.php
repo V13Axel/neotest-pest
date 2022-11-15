@@ -2,7 +2,11 @@
 
 use TestProject\User;
 
+uses()->group('file group');
+
 $makeUser = fn () => new User(18, 'John');
+
+beforeEach(fn () => $this->sut = $makeUser());
 
 test('class constructor')
     ->expect($makeUser)
@@ -10,11 +14,13 @@ test('class constructor')
     ->age->toBe(18)
     ->favorite_movies->toBeEmpty();
 
-test('tellName')
-    ->expect($makeUser)
-    ->tellName()->toBeString()->toContain('John');
+test('tellName', function () {
+    expect($this->sut)
+        ->tellName()->toBeString()->toContain('John');
+})
+    ->group('special tests');
 
-test('tellAge')
+it('can tellAge')
     ->expect($makeUser)
     ->tellAge()->toBeString()->toContain('18');
 
