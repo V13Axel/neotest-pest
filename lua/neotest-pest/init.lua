@@ -99,27 +99,27 @@ end
 ---@param tree neotest.Tree
 ---@return neotest.Result[]
 function NeotestAdapter.results(test, result, tree)
-  local output_file = test.context.results_path
+    local output_file = test.context.results_path
 
-  local ok, data = pcall(lib.files.read, output_file)
-  if not ok then
-    logger.error("No test output file found:", output_file)
-    return {}
-  end
+    local ok, data = pcall(lib.files.read, output_file)
+    if not ok then
+        logger.error("No test output file found:", output_file)
+        return {}
+    end
 
-  local ok, parsed_data = pcall(lib.xml.parse, data)
-  if not ok then
-    logger.error("Failed to parse test output:", output_file)
-    return {}
-  end
+    local ok, parsed_data = pcall(lib.xml.parse, data)
+    if not ok then
+        logger.error("Failed to parse test output:", output_file)
+        return {}
+    end
 
-  local ok, results = pcall(utils.get_test_results, parsed_data, output_file)
-  if not ok then
-    logger.error("Could not get test results", output_file)
-    return {}
-  end
+    local ok, results = pcall(utils.get_test_results, parsed_data, output_file)
+    if not ok then
+        logger.error("Could not get test results", output_file)
+        return {}
+    end
 
-  return results
+    return results
 end
 
 setmetatable(NeotestAdapter, {
