@@ -55,6 +55,7 @@ end
 ---@param output_file string
 ---@return table
 local function make_outputs(test, output_file)
+    logger.info("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
 
     local test_id = test_attr.file .. separator .. test_attr.name
@@ -67,6 +68,8 @@ local function make_outputs(test, output_file)
     }
 
     local test_failed = errors_or_fails(test)
+    logger.info("test_failed:", test_failed)
+
     if test_failed then
         test_output.status = "failed"
         test_output.short = test_failed[1]["failure"] or test_failed[1]["errors"]
