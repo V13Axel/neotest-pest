@@ -374,7 +374,7 @@ describe("get_test_results", function()
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
                                 file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
-                                name = "tellName",
+                                name = "skipped",
                                 time = "0.001544"
                             },
                             skipped = {}
@@ -385,10 +385,10 @@ describe("get_test_results", function()
         }
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName"] = {
+            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::skipped"] = {
                 output_file = output_file,
-                short = "PASSED | tellName",
-                status = "passed"
+                short = "SKIPPED | skipped",
+                status = "skipped"
             }
         }
 

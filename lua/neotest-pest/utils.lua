@@ -99,6 +99,11 @@ local function make_outputs(test, output_file)
         end
     end
 
+    if test['skipped'] then
+        test_output.status = "skipped"
+        test_output.short = make_short_output(test_attr, "skipped")
+    end
+
     logger.debug("test_output:", test_output)
 
     return test_id, test_output
