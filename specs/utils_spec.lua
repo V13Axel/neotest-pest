@@ -1,8 +1,9 @@
 local utils = require("neotest-pest.utils")
 
 describe("get_test_results", function()
+    local output_file = "/tmp/nvimhYaIPj/3"
+
     it("parses output with whole file", function()
-        local output_file = "/tmp/nvimhYaIPj/3"
         local xml_output = {
             testsuites = {
                 testsuite = {
@@ -157,6 +158,58 @@ describe("get_test_results", function()
             ["/Users/michaelutz/Code/neotest-pest/tests/Unit/ExampleTest.php::example"] = {
                 output_file = output_file,
                 short = "TESTS.UNIT.EXAMPLETEST\n-> PASSED - example",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(utils.get_test_results(xml_output, output_file), expected)
+    end)
+
+    it('parses output with single test', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "3",
+                        errors = "0",
+                        failures = "0",
+                        name = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                        skipped = "0",
+                        tests = "1",
+                        time = "0.004366",
+                        warnings = "0"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "3",
+                            errors = "0",
+                            failures = "0",
+                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            name = "P\\Tests\\Feature\\UserTest",
+                            skipped = "0",
+                            tests = "1",
+                            time = "0.004366",
+                            warnings = "0"
+                        },
+                        testcase = {
+                            _attr = {
+                                assertions = "3",
+                                class = "Tests\\Feature\\UserTest",
+                                classname = "Tests.Feature.UserTest",
+                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                name = "addFavoriteMovie",
+                                time = "0.004366"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::addFavoriteMovie"] = {
+                output_file = output_file,
+                short = "TESTS.FEATURE.USERTEST\n-> PASSED - addFavoriteMovie",
                 status = "passed"
             }
         }
