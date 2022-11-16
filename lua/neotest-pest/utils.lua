@@ -57,8 +57,9 @@ end
 local function make_outputs(test, output_file)
     logger.info("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
+    local name = string.gsub(test_attr.name, "it (.*)", "%1")
 
-    local test_id = test_attr.file .. separator .. test_attr.name
+    local test_id = test_attr.file .. separator .. name
     logger.info("Pest id:", { test_id })
 
     local test_output = {
