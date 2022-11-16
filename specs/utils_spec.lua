@@ -400,4 +400,57 @@ describe("get_test_results", function()
 
         assert.are.same(utils.get_test_results(xml_output, output_file), expected)
     end)
+
+    it('parses output with skipped tests', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "0",
+                        errors = "0",
+                        failures = "0",
+                        name = "",
+                        skipped = "1",
+                        tests = "1",
+                        time = "0.001544",
+                        warnings = "0"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "0",
+                            errors = "0",
+                            failures = "0",
+                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            name = "P\\Tests\\Feature\\UserTest",
+                            skipped = "1",
+                            tests = "1",
+                            time = "0.001544",
+                            warnings = "0"
+                        },
+                        testcase = {
+                            _attr = {
+                                assertions = "0",
+                                class = "Tests\\Feature\\UserTest",
+                                classname = "Tests.Feature.UserTest",
+                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                name = "tellName",
+                                time = "0.001544"
+                            },
+                            skipped = {}
+                        }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName"] = {
+                output_file = output_file,
+                short = "TESTS.FEATURE.USERTEST\n-> PASSED - tellName",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(utils.get_test_results(xml_output, output_file), expected)
+    end)
 end)

@@ -25,6 +25,7 @@ test('tellName', function () {
     expect($this->sut)
         ->tellName()->toBeString()->toContain('John');
 })
+    ->skip()
     ->group('special tests');
 
 it('can tellAge')
