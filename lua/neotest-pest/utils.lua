@@ -36,18 +36,24 @@ end
 
 ---Extract the failure messages from the tests
 ---@param tests table,
----@return boolean|table
+---@return boolean,table,table
 local function errors_or_fails(tests)
-    local errors_fails = {}
+    local failed = false
+    local errors = {}
+    local fails = {}
 
-    iterate_key(tests, "error", errors_fails)
-    iterate_key(tests, "failure", errors_fails)
+    iterate_key(tests, "error", errors)
+    iterate_key(tests, "failure", fails)
 
-    if #errors_fails == 0 then
-        return false
+    if #errors > 0 or #fails > 0 then
+        failed = true
     end
 
-    return errors_fails
+    return failed, errors, fails
+end
+
+local function make_short_output(test_attr, status)
+    return string.upper(status) .. " | " .. test_attr.name
 end
 
 ---Make the outputs for a given test
@@ -64,22 +70,36 @@ local function make_outputs(test, output_file)
 
     local test_output = {
         status = "passed",
-        short = string.upper(test_attr.classname) .. "\n-> " .. "PASSED" .. " - " .. test_attr.name,
+        short = make_short_output(test_attr, "passed"),
         output_file = output_file,
     }
 
-    local test_failed = errors_or_fails(test)
-    logger.info("test_failed:", test_failed)
+    local test_failed, errors, fails = errors_or_fails(test)
 
     if test_failed then
+        logger.info("test_failed:", { test_failed, errors, fails })
         test_output.status = "failed"
-        test_output.short = test_failed[1]["failure"] or test_failed[1]["errors"]
-        test_output.errors = {
-            {
-                line = test_attr.line,
-            },
-        }
+
+        if #errors > 0 then
+            local message = errors[1][1]
+            test_output.short = make_short_output(test_attr, "error") .. "\n\n" .. message
+            test_output.errors = {
+                {
+                    message = message
+                },
+            }
+        elseif #fails > 0 then
+            local message = fails[1][1]
+            test_output.short = make_short_output(test_attr, "failed") .. "\n\n" .. message
+            test_output.errors = {
+                {
+                    message = message
+                }
+            }
+        end
     end
+
+    logger.debug("test_output:", test_output)
 
     return test_id, test_output
 end

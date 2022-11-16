@@ -21,12 +21,16 @@ test('class constructor')
     ->favorite_movies->toBeEmpty();
 
 test('tellName', function () {
-    throw new \Exception("Oops!");
     expect($this->sut)
         ->tellName()->toBeString()->toContain('John');
 })
-    ->skip()
     ->group('special tests');
+
+it('throws', function () {
+    throw new \Exception('oops!');
+});
+
+it('is skipped')->skip();
 
 it('can tellAge')
     ->expect($makeUser)
