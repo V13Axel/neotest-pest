@@ -30,6 +30,8 @@ it('can tellAge')
     ->expect($makeUser)
     ->tellAge()->toBeString()->toContain('18');
 
+it('is false')->expect(true)->toBeFalse();
+
 test('addFavoriteMovie')
     ->expect($makeUser)
     ->addFavoriteMovie('Avengers')
