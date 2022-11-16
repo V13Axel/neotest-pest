@@ -343,4 +343,61 @@ describe("get_test_results", function()
 
         assert.are.same(utils.get_test_results(xml_output, output_file), expected)
     end)
+
+    it('parses output with errors', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "0",
+                        errors = "1",
+                        failures = "0",
+                        name = "",
+                        skipped = "0",
+                        tests = "1",
+                        time = "0.002610",
+                        warnings = "0"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "0",
+                            errors = "1",
+                            failures = "0",
+                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            name = "P\\Tests\\Feature\\UserTest",
+                            skipped = "0",
+                            tests = "1",
+                            time = "0.002610",
+                            warnings = "0"
+                        },
+                        testcase = {
+                            _attr = {
+                                assertions = "0",
+                                class = "Tests\\Feature\\UserTest",
+                                classname = "Tests.Feature.UserTest",
+                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                name = "tellName",
+                                time = "0.002610"
+                            },
+                            error = { "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName\nException: Oops!\n\n/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php:24\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Factories/TestCaseFactory.php:151\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:302\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/ExceptionTrace.php:29\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:303\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:279\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Console/Command.php:119\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:62\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:63",
+                                _attr = {
+                                    type = "Exception"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName"] = {
+                errors = { {} },
+                output_file = output_file,
+                status = "failed"
+            }
+        }
+
+        assert.are.same(utils.get_test_results(xml_output, output_file), expected)
+    end)
 end)

@@ -21,6 +21,7 @@ test('class constructor')
     ->favorite_movies->toBeEmpty();
 
 test('tellName', function () {
+    throw new \Exception("Oops!");
     expect($this->sut)
         ->tellName()->toBeString()->toContain('John');
 })
