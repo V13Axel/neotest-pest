@@ -395,4 +395,4 @@ describe("get_test_results", function()
         assert.are.same(utils.get_test_results(xml_output, output_file), expected)
     end)
 end)
--- vim: fdm=indent fdl=1
+-- vim: fdm=indent fdl=2

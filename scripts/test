@@ -13,8 +13,8 @@ errors=$(sed 's/\x1b\[[0-9;]*m//g' "${tempfile}" | awk '/(Errors|Failed) :/ {pri
 rm "${tempfile}"
 
 if [[ -n $errors ]]; then
-  echo "Tests failed"
-  exit 1
+	echo "Tests failed"
+	exit 1
 fi
 
 exit 0
