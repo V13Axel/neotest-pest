@@ -8,9 +8,13 @@ local separator = "::"
 ---@param namespace neotest.Position[] Any namespaces the position is within
 ---@return string
 M.make_test_id = function(position)
-    -- Treesitter starts line numbers from 0 so we add 1
-    local id = position.path .. separator .. position.name
+    -- Treesitter ID needs to look like 'tests/Unit/ColsHelperTest.php::it returns the proper format'
+    -- which means it should include position.path. However, as of PHPUnit 10, position.path
+    -- includes the root directory of the project, which breaks the ID matching.
+    -- As such, we need to remove the root directory from the path.
+    local path = string.sub(position.path, string.len(vim.loop.cwd()) + 2)
 
+    local id = path .. separator .. position.name
     logger.info("Path to test file:", { position.path })
     logger.info("Treesitter id:", { id })
 
@@ -65,7 +69,9 @@ local function make_outputs(test, output_file)
     local test_attr = test["_attr"] or test[1]["_attr"]
     local name = string.gsub(test_attr.name, "it (.*)", "%1")
 
-    local test_id = test_attr.file .. separator .. name
+    -- Difference to neotest-phpunit as of PHPUnit 10:
+    -- Pest's test IDs are in the format "path/to/test/file::test name"
+    local test_id = string.gsub(test_attr.file, "(.*)::(.*)", "%1") .. separator .. name
     logger.info("Pest id:", { test_id })
 
     local test_output = {
