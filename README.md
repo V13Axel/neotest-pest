@@ -1,7 +1,5 @@
 # neotest-pest
 
-[![Tests](https://github.com/theutz/neotest-pest/actions/workflows/ci.yml/badge.svg)](https://github.com/theutz/neotest-pest/actions/workflows/ci.yml)
-
 This plugin provides a [Pest](https://pestphp.com) adapter for the [Neotest](https://github.com/nvim-neotest/neotest) framework.
 
 :warning: _This plugin is still in the early stages of development. Please test against your Pest tests_ :warning:
@@ -15,7 +13,7 @@ use({
   'nvim-neotest/neotest',
   requires = {
     ...,
-    'theutz/neotest-pest',
+    'V13Axel/neotest-pest',
   },
   config = function()
     require('neotest').setup({
