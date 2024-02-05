@@ -13,7 +13,7 @@ local NeotestAdapter = { name = "neotest-pest" }
 ---@async
 ---@param dir string @Directory to treat as cwd
 ---@return string | nil @Absolute root dir of test suite
-NeotestAdapter.root = lib.files.match_root_pattern("composer.json", "pest.xml")
+NeotestAdapter.root = lib.files.match_root_pattern("composer.json", "tests/Pest.php")
 
 ---Filter directories when searching for test files
 ---@async
@@ -22,7 +22,7 @@ NeotestAdapter.root = lib.files.match_root_pattern("composer.json", "pest.xml")
 ---@param root string Root directory of project
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
-    return name ~= "tests" or string.match(rel_path, "tests")
+    return vim.startswith(rel_path, "tests")
 end
 
 ---@async
