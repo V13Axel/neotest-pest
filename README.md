@@ -2,7 +2,12 @@
 
 This plugin provides a [Pest](https://pestphp.com) adapter for the [Neotest](https://github.com/nvim-neotest/neotest) framework.
 
-:warning: _This plugin is still in the early stages of development. Please test against your Pest tests_ :warning:
+This is a fork of `neotest-pest` originally by [@theutz](https://github.com/theutz/neotest-pest), with some fixes and updates:
+- Updated to work with [Pest](https://pestphp.com) 2.0
+- Support for (and automatic detection of) Laravel Sail
+  - Note: This also moves junit output files into `storage/app/`
+
+:warning: _Ive only focused on making this work for me. Please test against your Pest tests_ :warning:
 
 ## :package: Installation
 
@@ -44,11 +49,22 @@ adapters = {
 
 #### Test single method
 
-To test a single test, hover over the test and run `lua require('neotest').run.run()`
+To test a single test, hover over the test and run `lua require('neotest').run.run()`.
+
+As an example, I have mine setup with <leader>t(est)n(earest) as such:
+
+```lua
+vim.keymap.set('n', '<leader>tn', function() require('neotest').run.run() end)
+```
 
 #### Test file
 
 To test a file run `lua require('neotest').run.run(vim.fn.expand('%'))`
+
+Example - <leader>t(est)f(ile):
+```lua
+vim.keymap.set('n', '<leader>tf', function() require('neotest').run.run(vim.fn.expand('%')) end)
+```
 
 #### Test directory
 
@@ -60,7 +76,7 @@ To test the full test suite run `lua require('neotest').run.run({ suite = true }
 
 ## :gift: Contributing
 
-This project is maintained by the Neovim PHP community. Please raise a PR if you are interested in adding new functionality or fixing any bugs. When submitting a bug, please include an example test that we can test against.
+This fork is maintained by one guy, in my spare time and when I can get to it. Please raise a PR if you are interested in adding new functionality or fixing any bugs. When submitting a bug, please include an example test that I can test against.
 
 To trigger the tests for the adapter, run:
 
@@ -70,4 +86,4 @@ To trigger the tests for the adapter, run:
 
 ## :clap: Prior Art
 
-This package is _insanely_ reliant on the excellent efforts put into [olimorris/neotest-phpunit](https://github.com/olimorris/neotest-phpunit) by [@olimorris](https://github.com/olimorris).
+This package is a fork of [neotest-pest](https://github.com/theutz/neotest-pest) by [@theutz](https://github.com/olimorris), which relied _heavily_ on [olimorris/neotest-phpunit](https://github.com/olimorris/neotest-phpunit) by [@olimorris](https://github.com/olimorris).
