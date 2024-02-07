@@ -70,15 +70,26 @@ end
 ---@return neotest.RunSpec | nil
 function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
-    local results_path = async.fn.tempname()
+    local results_path = "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
 
     local binary = get_pest_cmd()
 
-    local command = vim.tbl_flatten({
-        binary,
-        position.name ~= "tests" and position.path,
-        "--log-junit=" .. results_path,
-    })
+    local command = {}
+
+    if vim.fn.filereadable("vendor/bin/sail") then
+        command = vim.tbl_flatten({
+            "vendor/bin/sail", "bin", "pest",
+            position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd()) + 1)),
+            "--log-junit=" .. results_path,
+        })
+    else
+        command = vim.tbl_flatten({
+            binary,
+            position.name ~= "tests" and position.path,
+            "--log-junit=" .. results_path,
+        })
+    end
+
 
     if position.type == "test" then
         local script_args = vim.tbl_flatten({
