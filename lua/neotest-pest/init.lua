@@ -55,7 +55,7 @@ end
 local function get_pest_cmd()
     local binary = "pest"
 
-    if vim.fn.filereadable("vendor/bin/pest") then
+    if vim.fn.filereadable("vendor/bin/pest") == 1 then
         binary = "vendor/bin/pest"
     end
 
@@ -76,7 +76,7 @@ function NeotestAdapter.build_spec(args)
 
     local command = {}
 
-    if vim.fn.filereadable("vendor/bin/sail") then
+    if vim.fn.filereadable("vendor/bin/sail") == 1 then
         command = vim.tbl_flatten({
             "vendor/bin/sail", "bin", "pest",
             position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd()) + 1)),
