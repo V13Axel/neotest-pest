@@ -1,21 +1,14 @@
+local logger = require('neotest.logging')
+
 local is_callable = function(obj)
     return type(obj) == "function" or (type(obj) == "table" and obj.__call)
 end
 
-local M = {}
-
-M.opts = {}
-
-M.available_opts = {
-    "enable_sail",
-    "pest_cmd",
-    "root_ignore_files",
-    "root_files",
-    "filter_dirs",
-    "env",
+local M = {
+    opts = {},
 }
 
-M.get = function(key)
+function M.get(key)
     if M.opts[key] then
         if is_callable(M.opts[key]) then
             return M.opts[key]()
@@ -24,18 +17,31 @@ M.get = function(key)
         return M.opts[key]
     end
 
-    if M[key] then
-        return M[key]()
+    return M[key]()
+end
+
+function M.enable_sail()
+    if vim.fn.filereadable("vendor/bin/sail") ~= 1 then
+        logger.error("Sail executable not found")
+        return false
     end
 
-    return {}
+    logger.debug("Attempting to check if sail is running")
+    local sail_ps_output = vim.fn.system("vendor/bin/sail ps | wc -l")
+
+    logger.debug("Sail ps output:", sail_ps_output)
+
+    if sail_ps_output > 1 then
+        logger.debug("Sail is running")
+        return true
+    end
+
+    logger.debug("Sail is not running")
+
+    return false
 end
 
-M.enable_sail = function()
-    return vim.fn.filereadable("vendor/bin/sail") == 1
-end
-
-M.pest_cmd = function()
+function M.pest_cmd()
     local binary = "pest"
 
     if vim.fn.filereadable("vendor/bin/pest") == 1 then
@@ -45,20 +51,20 @@ M.pest_cmd = function()
     return binary
 end
 
-M.env = function()
+function M.env()
     return {}
 end
 
-M.root_ignore_files = function()
+function M.root_ignore_files()
     return {}
 end
 
-M.root_files = function()
+function M.root_files()
     return { "tests/Pest.php" }
 end
 
-M.filter_dirs = function()
-    return { ".git", "node_modules", "vendor" }
+function M.filter_dirs()
+    return { "tests" }
 end
 
 return M

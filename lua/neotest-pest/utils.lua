@@ -15,8 +15,8 @@ M.make_test_id = function(position)
     local path = string.sub(position.path, string.len(vim.loop.cwd()) + 2)
 
     local id = path .. separator .. position.name
-    logger.info("Path to test file:", { position.path })
-    logger.info("Treesitter id:", { id })
+    logger.debug("Path to test file:", { position.path })
+    logger.debug("Treesitter id:", { id })
 
     return id
 end
@@ -65,14 +65,14 @@ end
 ---@param output_file string
 ---@return table
 local function make_outputs(test, output_file)
-    logger.info("Pre-output test:", test)
+    logger.debug("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
     local name = string.gsub(test_attr.name, "it (.*)", "%1")
 
     -- Difference to neotest-phpunit as of PHPUnit 10:
     -- Pest's test IDs are in the format "path/to/test/file::test name"
     local test_id = string.gsub(test_attr.file, "(.*)::(.*)", "%1") .. separator .. name
-    logger.info("Pest id:", { test_id })
+    logger.debug("Pest id:", { test_id })
 
     local test_output = {
         status = "passed",
@@ -83,7 +83,7 @@ local function make_outputs(test, output_file)
     local test_failed, errors, fails = errors_or_fails(test)
 
     if test_failed then
-        logger.info("test_failed:", { test_failed, errors, fails })
+        logger.debug("test_failed:", { test_failed, errors, fails })
         test_output.status = "failed"
 
         if #errors > 0 then

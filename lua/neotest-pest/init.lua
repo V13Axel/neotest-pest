@@ -16,31 +16,31 @@ local NeotestAdapter = { name = "neotest-pest" }
 function NeotestAdapter.root(dir)
     local result = nil
 
-    logger.info("Finding root...")
+    logger.debug("Finding root...")
 
     for _, root_ignore_file in ipairs(config.get("root_ignore_files")) do
-        logger.info("Checking root ignore file", root_ignore_file)
+        logger.debug("Checking root ignore file", root_ignore_file)
 
         result = lib.files.match_root_pattern(root_ignore_file)(dir)
 
         if result then
-            logger.info("Ignoring root because file", root_ignore_file)
+            logger.debug("Ignoring root because file", root_ignore_file)
             return nil
         end
     end
 
     for _, root_file in ipairs(config.get("root_files")) do
-        logger.info("Checking root file", root_file)
+        logger.debug("Checking root file", root_file)
 
         result = lib.files.match_root_pattern(root_file)(dir)
 
         if result then
-            logger.info("Found root", result)
+            logger.debug("Found root", result)
             break
         end
     end
 
-    logger.info("Root not found")
+    logger.debug("Root not found")
 
     return result
 end
@@ -52,7 +52,11 @@ end
 ---@param root string Root directory of project
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
-    return vim.startswith(rel_path, "tests")
+    for _, filter_dir in ipairs(config.get("filter_dirs")) do
+        if vim.startswith(rel_path, filter_dir) then return true end
+    end
+
+    return false
 end
 
 ---@async
