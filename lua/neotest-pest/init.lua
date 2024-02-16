@@ -13,18 +13,34 @@ local NeotestAdapter = { name = "neotest-pest" }
 ---@async
 ---@param dir string @Directory to treat as cwd
 ---@return string | nil @Absolute root dir of test suite
-function NeotestAdapter.root()
+function NeotestAdapter.root(dir)
     local result = nil
 
+    logger.info("Finding root...")
+
     for _, root_ignore_file in ipairs(config.get_root_ignore_files()) do
-      result = lib.files.match_root_pattern(root_ignore_file)(dir)
-      if result then return nil end
+        logger.info("Checking root ignore file", root_ignore_file)
+
+        result = lib.files.match_root_pattern(root_ignore_file)(dir)
+
+        if result then
+            logger.info("Ignoring root because file", root_ignore_file)
+            return nil
+        end
     end
 
     for _, root_file in ipairs(config.get_root_files()) do
-      result = lib.files.match_root_pattern(root_file)(dir)
-      if result then break end
+        logger.info("Checking root file", root_file)
+
+        result = lib.files.match_root_pattern(root_file)(dir)
+
+        if result then
+            logger.info("Found root", result)
+            break
+        end
     end
+
+    logger.info("Root not found")
 
     return result
 end
@@ -43,6 +59,7 @@ end
 ---@param file_path string
 ---@return boolean
 function NeotestAdapter.is_test_file(file_path)
+    logger.info("Checking file" .. file_path)
     return vim.endswith(file_path, "Test.php")
 end
 
@@ -146,12 +163,44 @@ end
 
 setmetatable(NeotestAdapter, {
     __call = function(_, opts)
+        logger.info("Initializing opts")
         if is_callable(opts.pest_cmd) then
-            get_pest_cmd = opts.pest_cmd
+            config.get_pest_cmd = opts.pest_cmd
         elseif opts.pest_cmd then
-            get_pest_cmd = function()
+            config.get_pest_cmd = function()
                 return opts.pest_cmd
             end
+        end
+        if is_callable(opts.root_ignore_files) then
+            config.get_root_ignore_files = opts.root_ignore_files
+        elseif opts.root_ignore_files then
+            config.get_root_ignore_files = function()
+                return opts.root_ignore_files
+            end
+        end
+        if is_callable(opts.root_files) then
+            config.get_root_files = opts.root_files
+        elseif opts.root_files then
+            config.get_root_files = function()
+                return opts.root_files
+            end
+        end
+        if is_callable(opts.filter_dirs) then
+            config.get_filter_dirs = opts.filter_dirs
+        elseif opts.filter_dirs then
+            config.get_filter_dirs = function()
+                return opts.filter_dirs
+            end
+        end
+        if is_callable(opts.env) then
+            config.get_env = opts.env
+        elseif type(opts.env) == "table" then
+            config.get_env = function()
+                return opts.env
+            end
+        end
+        if type(opts.dap) == "table" then
+            dap_configuration = opts.dap
         end
         return NeotestAdapter
     end,
