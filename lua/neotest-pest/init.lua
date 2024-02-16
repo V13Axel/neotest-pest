@@ -13,7 +13,7 @@ local NeotestAdapter = { name = "neotest-pest" }
 ---@async
 ---@param dir string @Directory to treat as cwd
 ---@return string | nil @Absolute root dir of test suite
-NeotestAdapter.root = lib.files.match_root_pattern("composer.json", "tests/Pest.php")
+NeotestAdapter.root = lib.files.match_root_pattern("tests/Pest.php")
 
 ---Filter directories when searching for test files
 ---@async
