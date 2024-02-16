@@ -1,7 +1,7 @@
 local lib = require('neotest.lib')
-local async = require('neotest.async')
 local logger = require('neotest.logging')
 local utils = require('neotest-pest.utils')
+local config = require('neotest-pest.config')
 
 ---@class neotest.Adapter
 ---@field name string
@@ -13,7 +13,21 @@ local NeotestAdapter = { name = "neotest-pest" }
 ---@async
 ---@param dir string @Directory to treat as cwd
 ---@return string | nil @Absolute root dir of test suite
-NeotestAdapter.root = lib.files.match_root_pattern("tests/Pest.php")
+function NeotestAdapter.root()
+    local result = nil
+
+    for _, root_ignore_file in ipairs(config.get_root_ignore_files()) do
+      result = lib.files.match_root_pattern(root_ignore_file)(dir)
+      if result then return nil end
+    end
+
+    for _, root_file in ipairs(config.get_root_files()) do
+      result = lib.files.match_root_pattern(root_file)(dir)
+      if result then break end
+    end
+
+    return result
+end
 
 ---Filter directories when searching for test files
 ---@async
@@ -52,16 +66,6 @@ function NeotestAdapter.discover_positions(path)
     })
 end
 
-local function get_pest_cmd()
-    local binary = "pest"
-
-    if vim.fn.filereadable("vendor/bin/pest") == 1 then
-        binary = "vendor/bin/pest"
-    end
-
-    return binary
-end
-
 local is_callable = function(obj)
     return type(obj) == "function" or (type(obj) == "table" and obj.__call)
 end
@@ -72,11 +76,11 @@ function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
     local results_path = "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
 
-    local binary = get_pest_cmd()
+    local binary = config.get_pest_cmd()
 
     local command = {}
 
-    if vim.fn.filereadable("vendor/bin/sail") == 1 then
+    if config.enable_sail() then
         command = vim.tbl_flatten({
             "vendor/bin/sail", "bin", "pest",
             position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd()) + 1)),
