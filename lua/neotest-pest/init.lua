@@ -18,7 +18,7 @@ function NeotestAdapter.root(dir)
 
     logger.debug("Finding root...")
 
-    for _, root_ignore_file in ipairs(config.get("root_ignore_files")) do
+    for _, root_ignore_file in ipairs(config("root_ignore_files")) do
         logger.debug("Checking root ignore file", root_ignore_file)
 
         result = lib.files.match_root_pattern(root_ignore_file)(dir)
@@ -29,7 +29,7 @@ function NeotestAdapter.root(dir)
         end
     end
 
-    for _, root_file in ipairs(config.get("root_files")) do
+    for _, root_file in ipairs(config("root_files")) do
         logger.debug("Checking root file", root_file)
 
         result = lib.files.match_root_pattern(root_file)(dir)
@@ -52,7 +52,7 @@ end
 ---@param root string Root directory of project
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
-    for _, filter_dir in ipairs(config.get("filter_dirs")) do
+    for _, filter_dir in ipairs(config("filter_dirs")) do
         if name == filter_dir then return false end
     end
 
@@ -63,7 +63,7 @@ end
 ---@param file_path string
 ---@return boolean
 function NeotestAdapter.is_test_file(file_path)
-    for _, suffix in ipairs(config.get("test_file_suffix")) do
+    for _, suffix in ipairs(config("test_file_suffix")) do
         if vim.endswith(file_path, suffix) then return true end
     end
 
@@ -94,15 +94,15 @@ end
 ---@return neotest.RunSpec | nil
 function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
-    local results_path = config.get('results_path')
-    local binary = config.get('pest_cmd')
+    local results_path = config('results_path')
+    local binary = config('pest_cmd')
 
     logger.info("Building spec for:", position)
     logger.info("Results path:", results_path)
 
     local command = {}
 
-    if config.get('sail_enabled') then
+    if config('sail_enabled') then
         logger.info("Sail enabled")
         command = vim.tbl_flatten({
             "vendor/bin/sail", "bin", "pest",
