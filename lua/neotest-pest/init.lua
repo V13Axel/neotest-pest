@@ -4,6 +4,20 @@ local utils = require('neotest-pest.utils')
 local config = require('neotest-pest.config')
 local debug = logger.debug
 
+local notify = function(msg, level)
+    vim.notify(msg, level, {
+        title = "neotest-pest",
+    })
+end
+
+local error = function(msg)
+    notify(msg, "error")
+end
+
+local info = function(msg)
+    notify(msg, "info")
+end
+
 ---@class neotest.Adapter
 ---@field name string
 local NeotestAdapter = { name = "neotest-pest" }
@@ -143,18 +157,21 @@ function NeotestAdapter.results(test, result, tree)
 
     local ok, data = pcall(lib.files.read, output_file)
     if not ok then
+        error("No test output file found! Should have been at: " .. output_file)
         logger.error("No test output file found:", output_file)
         return {}
     end
 
     local ok, parsed_data = pcall(lib.xml.parse, data)
     if not ok then
+        error("Failed to parse test output!")
         logger.error("Failed to parse test output:", output_file)
         return {}
     end
 
     local ok, results = pcall(utils.get_test_results, parsed_data, output_file)
     if not ok then
+        error("Could not get test results!")
         logger.error("Could not get test results", output_file)
         return {}
     end
