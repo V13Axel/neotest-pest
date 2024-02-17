@@ -137,6 +137,14 @@ function NeotestAdapter.build_spec(args)
         debug("Position type:", position.type)
     end
 
+    if config('is_parallel') then
+        command = vim.tbl_flatten({
+            command,
+            "--parallel",
+            config('parallel'),
+        })
+    end
+
     debug("Command:", command)
 
     return {

@@ -14,9 +14,9 @@ local M = {
         root_files = { "tests/Pest.php" },
         filter_dirs = { "vendor" },
         test_file_suffix = { "Test.php" },
-        autostart_sail = false,
         sail_executable = "vendor/bin/sail",
         pest_cmd = "vendor/bin/pest",
+        parallel = 0,
     },
 
     _sail_error = false,
@@ -32,6 +32,10 @@ function M.env.sail_enabled()
     end
 
     return M.sail_available()
+end
+
+function M.env.is_parallel()
+    return M('parallel') > 0
 end
 
 function M.env.pest_cmd()
