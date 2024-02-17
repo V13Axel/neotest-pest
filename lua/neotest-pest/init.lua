@@ -53,18 +53,21 @@ end
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
     for _, filter_dir in ipairs(config.get("filter_dirs")) do
-        if vim.startswith(rel_path, filter_dir) then return true end
+        if name == filter_dir then return false end
     end
 
-    return false
+    return true
 end
 
 ---@async
 ---@param file_path string
 ---@return boolean
 function NeotestAdapter.is_test_file(file_path)
-    logger.info("Checking file" .. file_path)
-    return vim.endswith(file_path, "Test.php")
+    for _, suffix in ipairs(config.get("test_file_suffix")) do
+        if vim.endswith(file_path, suffix) then return true end
+    end
+
+    return false
 end
 
 function NeotestAdapter.discover_positions(path)
@@ -91,26 +94,32 @@ end
 ---@return neotest.RunSpec | nil
 function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
-    local results_path = "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
+    local results_path = config.get('results_path')
+    local binary = config.get('pest_cmd')
 
-    local binary = config.get_pest_cmd()
+    logger.info("Building spec for:", position)
+    logger.info("Results path:", results_path)
 
     local command = {}
 
-    if config.enable_sail() then
+    if config.get('sail_enabled') then
+        logger.info("Sail enabled")
         command = vim.tbl_flatten({
             "vendor/bin/sail", "bin", "pest",
-            position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd()) + 1)),
-            "--log-junit=" .. results_path,
+            position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)),
         })
     else
+        logger.info("Sail not enabled")
         command = vim.tbl_flatten({
             binary,
             position.name ~= "tests" and position.path,
-            "--log-junit=" .. results_path,
         })
     end
 
+    command = vim.tbl_flatten({
+        command,
+        "--log-junit=" .. results_path,
+    })
 
     if position.type == "test" then
         local script_args = vim.tbl_flatten({
@@ -123,6 +132,8 @@ function NeotestAdapter.build_spec(args)
             script_args,
         })
     end
+
+    logger.info("Command:", command)
 
     return {
         command = command,
@@ -165,7 +176,7 @@ setmetatable(NeotestAdapter, {
     __call = function(_, opts)
         logger.info("Initializing opts")
 
-        config.opts = opts or {}
+        config.merge(opts or {})
 
         return NeotestAdapter
     end,

@@ -1,47 +1,118 @@
 local logger = require('neotest.logging')
+local ok, async = pcall(require, "nio")
+if not ok then
+  async = require("neotest.async")
+end
 
 local is_callable = function(obj)
     return type(obj) == "function" or (type(obj) == "table" and obj.__call)
 end
 
 local M = {
-    opts = {},
+    env = {
+        root_ignore_files = {},
+        root_files = { "tests/Pest.php" },
+        filter_dirs = { "vendor" },
+        test_file_suffix = { "Test.php" },
+        autostart_sail = false,
+        sail_executable = "vendor/bin/sail",
+    },
+
+    _sail_error = false,
+    _sail_running = false,
 }
 
 function M.get(key)
-    if M.opts[key] then
-        if is_callable(M.opts[key]) then
-            return M.opts[key]()
-        end
-
-        return M.opts[key]
+    if is_callable(M.env[key] or nil) then
+        return M.env[key]()
     end
 
-    return M[key]()
+    return M.env[key] or {}
 end
 
-function M.enable_sail()
-    if vim.fn.filereadable("vendor/bin/sail") ~= 1 then
+function M.env.sail_enabled()
+    if M.sail_available() == false then
         logger.error("Sail executable not found")
         return false
     end
 
-    logger.debug("Attempting to check if sail is running")
-    local sail_ps_output = vim.fn.system("vendor/bin/sail ps | wc -l")
-
-    logger.debug("Sail ps output:", sail_ps_output)
-
-    if sail_ps_output > 1 then
-        logger.debug("Sail is running")
+    if M.sail_running() then
+        logger.info("Sail is already running")
         return true
     end
 
-    logger.debug("Sail is not running")
+    if M.get('autostart_sail') then
+        return M.start_sail();
+    end
+
+    vim.api.nvim_echo({ {
+        "Sail not running, and not configured to autostart! add 'autostart_sail = true' to your config or start it manually",
+        "None",
+    } }, false, {})
+    return false
+end
+
+function M.env.results_path()
+    if M.get('sail_enabled') then
+        return "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
+    end
+
+    return async.fn.tempname()
+end
+
+function M.sail_error()
+    return M._sail_error
+end
+
+function M.sail_available()
+    return vim.fn.filereadable(M.get('sail_executable')) == 1
+end
+
+function M.sail_running()
+    if (M._sail_running) then
+        return true
+    end
+
+    logger.info("Attempting to check if sail is running")
+    local sail_ps_output = vim.fn.system("vendor/bin/sail ps | wc -l")
+
+    logger.info("Sail ps output:", sail_ps_output)
+
+    if tonumber(sail_ps_output) > 1 then
+        logger.info("Sail is running")
+        M._sail_running = true
+        return true
+    end
+
+    logger.info("Sail is not running")
 
     return false
 end
 
-function M.pest_cmd()
+function M.start_sail()
+    logger.info("Attempting to start sail")
+    vim.api.nvim_echo({ { "Sail not running! Attempting to start it...", "None" } }, false, {})
+
+    local sail_up_output = vim.fn.system("vendor/bin/sail up -d") or ""
+    logger.info("Sail up output:", sail_up_output)
+
+    if vim.v.shell_error == 0 then
+        logger.info("Sail started successfully")
+        vim.api.nvim_echo({ { "Sail started!", "None" } }, false, {})
+        M._sail_running = true
+        return true
+    end
+
+    logger.error("Failed to start sail")
+    logger.error("Sail up output:", sail_up_output)
+    logger.error("Sail up error:", vim.v.shell_error)
+    vim.api.nvim_echo({ { "Failed to start sail!", "ErrorMsg" } }, false, {})
+    M._sail_error = true
+
+    return false
+end
+
+function M.env.pest_cmd()
     local binary = "pest"
 
     if vim.fn.filereadable("vendor/bin/pest") == 1 then
@@ -51,20 +122,10 @@ function M.pest_cmd()
     return binary
 end
 
-function M.env()
-    return {}
-end
-
-function M.root_ignore_files()
-    return {}
-end
-
-function M.root_files()
-    return { "tests/Pest.php" }
-end
-
-function M.filter_dirs()
-    return { "tests" }
+function M.merge(env)
+    for key, value in pairs(env) do
+        M.env[key] = value
+    end
 end
 
 return M
