@@ -3,6 +3,9 @@ local logger = require('neotest.logging')
 local utils = require('neotest-pest.utils')
 local config = require('neotest-pest.config')
 
+local info = logger.info
+local debug = logger.debug
+
 ---@class neotest.Adapter
 ---@field name string
 local NeotestAdapter = { name = "neotest-pest" }
@@ -16,31 +19,31 @@ local NeotestAdapter = { name = "neotest-pest" }
 function NeotestAdapter.root(dir)
     local result = nil
 
-    logger.debug("Finding root...")
+    debug("Finding root...")
 
     for _, root_ignore_file in ipairs(config("root_ignore_files")) do
-        logger.debug("Checking root ignore file", root_ignore_file)
+        debug("Checking root ignore file", root_ignore_file)
 
         result = lib.files.match_root_pattern(root_ignore_file)(dir)
 
         if result then
-            logger.debug("Ignoring root because file", root_ignore_file)
+            debug("Ignoring root because file", root_ignore_file)
             return nil
         end
     end
 
     for _, root_file in ipairs(config("root_files")) do
-        logger.debug("Checking root file", root_file)
+        debug("Checking root file", root_file)
 
         result = lib.files.match_root_pattern(root_file)(dir)
 
         if result then
-            logger.debug("Found root", result)
+            debug("Found root", result)
             break
         end
     end
 
-    logger.debug("Root not found")
+    debug("Root not found")
 
     return result
 end
@@ -95,45 +98,34 @@ end
 function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
     local results_path = config('results_path')
-    local binary = config('pest_cmd')
 
-    logger.info("Building spec for:", position)
-    logger.info("Results path:", results_path)
+    info("Building spec for:", position)
+    info("Results path:", results_path)
 
-    local command = {}
+    local path = position.path;
 
     if config('sail_enabled') then
-        logger.info("Sail enabled")
-        command = vim.tbl_flatten({
-            "vendor/bin/sail", "bin", "pest",
-            position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)),
-        })
-    else
-        logger.info("Sail not enabled")
-        command = vim.tbl_flatten({
-            binary,
-            position.name ~= "tests" and position.path,
-        })
+        info("Sail enabled, adjusting path")
+        path = "/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
     end
 
-    command = vim.tbl_flatten({
-        command,
+    local command = vim.tbl_flatten({
+        config('pest_cmd'),
+        path,
         "--log-junit=" .. results_path,
     })
 
     if position.type == "test" then
-        local script_args = vim.tbl_flatten({
+        command = vim.tbl_flatten({
+            command,
             "--filter",
             position.name,
         })
-
-        command = vim.tbl_flatten({
-            command,
-            script_args,
-        })
+    else
+        debug("Position type:", position.type)
     end
 
-    logger.info("Command:", command)
+    info("Command:", command)
 
     return {
         command = command,

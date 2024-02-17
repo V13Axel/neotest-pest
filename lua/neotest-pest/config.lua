@@ -34,6 +34,14 @@ function M.env.sail_enabled()
     return M.sail_available()
 end
 
+function M.env.pest_cmd()
+    if M('sail_enabled') then
+        return { "vendor/bin/sail", "bin", "pest" }
+    end
+
+    return { "vendor/bin/pest" }
+end
+
 function M.env.results_path()
     if M('sail_enabled') then
         return "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
@@ -48,6 +56,7 @@ end
 
 function M.sail_available()
     if vim.fn.filereadable(M('sail_executable')) == 1 then
+        M._sail_enabled = true
         return true
     end
 
