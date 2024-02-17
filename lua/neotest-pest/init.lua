@@ -2,8 +2,6 @@ local lib = require('neotest.lib')
 local logger = require('neotest.logging')
 local utils = require('neotest-pest.utils')
 local config = require('neotest-pest.config')
-
-local info = logger.info
 local debug = logger.debug
 
 ---@class neotest.Adapter
@@ -99,13 +97,13 @@ function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
     local results_path = config('results_path')
 
-    info("Building spec for:", position)
-    info("Results path:", results_path)
+    debug("Building spec for:", position)
+    debug("Results path:", results_path)
 
     local path = position.path;
 
     if config('sail_enabled') then
-        info("Sail enabled, adjusting path")
+        debug("Sail enabled, adjusting path")
         path = "/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
     end
 
@@ -125,7 +123,7 @@ function NeotestAdapter.build_spec(args)
         debug("Position type:", position.type)
     end
 
-    info("Command:", command)
+    debug("Command:", command)
 
     return {
         command = command,
@@ -166,8 +164,6 @@ end
 
 setmetatable(NeotestAdapter, {
     __call = function(_, opts)
-        logger.info("Initializing opts")
-
         config.merge(opts or {})
 
         return NeotestAdapter
