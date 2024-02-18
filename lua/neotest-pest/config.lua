@@ -17,6 +17,7 @@ local M = {
         sail_executable = "vendor/bin/sail",
         pest_cmd = "vendor/bin/pest",
         parallel = 0,
+        compact = false,
     },
 
     _sail_error = false,
