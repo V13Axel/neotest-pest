@@ -1,6 +1,16 @@
 #!/bin/bash
 tempfile=".test_output.tmp"
 
+# Create packpath directory
+mkdir -p packpath
+
+# Need to clone these plugins to run tests:
+git -C packpath/pack/manual/opt/plenary.nvim pull || git clone https://github.com/nvim-lua/plenary.nvim.git ./packpath/pack/manual/opt/plenary.nvim
+git -C packpath/pack/manual/opt/neotest pull || git clone https://github.com/nvim-neotest/neotest.git ./packpath/pack/manual/opt/neotest
+git -C packpath/pack/manual/opt/neotest-plenary pull || git clone https://github.com/nvim-neotest/neotest-plenary.git ./packpath/pack/manual/opt/neotest-plenary
+git -C packpath/pack/manual/opt/nvim-treesitter pull || git clone https://github.com/nvim-treesitter/nvim-treesitter.git ./packpath/pack/manual/opt/nvim-treesitter
+
+# Run tests
 if [[ -n $1 ]]; then
 	nvim --headless --noplugin -u specs/minimal_init.vim -c "PlenaryBustedFile $1" | tee "${tempfile}"
 else

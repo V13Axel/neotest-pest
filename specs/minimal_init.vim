@@ -1,5 +1,6 @@
+set packpath=./packpath
 set rtp+=.
-set rtp+=../plenary.nvim
+set rtp+=./packpath/plenary.nvim
 packadd! plenary.nvim
 packadd! neotest
 packadd! neotest-plenary
