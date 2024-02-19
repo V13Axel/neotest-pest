@@ -67,7 +67,7 @@ end
 ---@param root string Root directory of project
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
-    for _, filter_dir in ipairs(config("filter_dirs")) do
+    for _, filter_dir in ipairs(config("ignore_dirs")) do
         if name == filter_dir then return false end
     end
 
@@ -78,7 +78,7 @@ end
 ---@param file_path string
 ---@return boolean
 function NeotestAdapter.is_test_file(file_path)
-    for _, suffix in ipairs(config("test_file_suffix")) do
+    for _, suffix in ipairs(config("test_file_suffixes")) do
         if vim.endswith(file_path, suffix) then return true end
     end
 

@@ -12,10 +12,9 @@ local M = {
     env = {
         root_ignore_files = {},
         root_files = { "tests/Pest.php" },
-        filter_dirs = { "vendor" },
-        test_file_suffix = { "Test.php" },
+        ignore_dirs = { "vendor", "node_modules" },
+        test_file_suffixes = { "Test.php" },
         sail_executable = "vendor/bin/sail",
-        pest_cmd = "vendor/bin/pest",
         parallel = 0,
         compact = false,
     },
