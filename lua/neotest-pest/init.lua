@@ -145,13 +145,13 @@ function NeotestAdapter.build_spec(args)
         })
     end
 
-    -- if config('compact') == true then
-    --     info("Using compact output")
-    --     command = vim.tbl_flatten({
-    --         command,
-    --         "--compact",
-    --     })
-    -- end
+    if config('compact') == true then
+        info("Using compact output")
+        command = vim.tbl_flatten({
+            command,
+            "--compact",
+        })
+    end
 
     debug("Command:", command)
 
