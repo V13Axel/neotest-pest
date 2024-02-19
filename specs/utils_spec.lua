@@ -22,7 +22,7 @@ describe("get_test_results", function()
                             assertions = "1",
                             errors = "0",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Examples/some/deep/nesting/NestingTest.php",
+                            file = "tests/Examples/some/deep/nesting/NestingTest.php",
                             name = "P\\Tests\\Examples\\some\\deep\\nesting\\NestingTest",
                             skipped = "0",
                             tests = "1",
@@ -34,7 +34,7 @@ describe("get_test_results", function()
                                 assertions = "1",
                                 class = "Tests\\Examples\\some\\deep\\nesting\\NestingTest",
                                 classname = "Tests.Examples.some.deep.nesting.NestingTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Examples/some/deep/nesting/NestingTest.php",
+                                file = "tests/Examples/some/deep/nesting/NestingTest.php",
                                 name = "is true",
                                 time = "0.002344"
                             }
@@ -44,7 +44,7 @@ describe("get_test_results", function()
                             assertions = "15",
                             errors = "0",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            file = "tests/Feature/UserTest.php",
                             name = "P\\Tests\\Feature\\UserTest",
                             skipped = "0",
                             tests = "5",
@@ -56,7 +56,7 @@ describe("get_test_results", function()
                                 assertions = "3",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "class constructor",
                                 time = "0.000941"
                             }
@@ -65,7 +65,7 @@ describe("get_test_results", function()
                                 assertions = "2",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "tellName",
                                 time = "0.000494"
                             }
@@ -74,7 +74,7 @@ describe("get_test_results", function()
                                 assertions = "2",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "can tellAge",
                                 time = "0.000384"
                             }
@@ -83,7 +83,7 @@ describe("get_test_results", function()
                                 assertions = "3",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "addFavoriteMovie",
                                 time = "0.000959"
                             }
@@ -92,7 +92,7 @@ describe("get_test_results", function()
                                 assertions = "5",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "removeFavoriteMovie",
                                 time = "0.001608"
                             }
@@ -102,7 +102,7 @@ describe("get_test_results", function()
                             assertions = "1",
                             errors = "0",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Unit/ExampleTest.php",
+                            file = "tests/Unit/ExampleTest.php",
                             name = "P\\Tests\\Unit\\ExampleTest",
                             skipped = "0",
                             tests = "1",
@@ -114,7 +114,7 @@ describe("get_test_results", function()
                                 assertions = "1",
                                 class = "Tests\\Unit\\ExampleTest",
                                 classname = "Tests.Unit.ExampleTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Unit/ExampleTest.php",
+                                file = "tests/Unit/ExampleTest.php",
                                 name = "example",
                                 time = "0.000116"
                             }
@@ -125,37 +125,37 @@ describe("get_test_results", function()
         }
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Examples/some/deep/nesting/NestingTest.php::is true"] = {
+            ["tests/Examples/some/deep/nesting/NestingTest.php::is true"] = {
                 output_file = output_file,
                 short = "PASSED | is true",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::addFavoriteMovie"] = {
+            ["tests/Feature/UserTest.php::addFavoriteMovie"] = {
                 output_file = output_file,
                 short = "PASSED | addFavoriteMovie",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::can tellAge"] = {
+            ["tests/Feature/UserTest.php::can tellAge"] = {
                 output_file = output_file,
                 short = "PASSED | can tellAge",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::class constructor"] = {
+            ["tests/Feature/UserTest.php::class constructor"] = {
                 output_file = output_file,
                 short = "PASSED | class constructor",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::removeFavoriteMovie"] = {
+            ["tests/Feature/UserTest.php::removeFavoriteMovie"] = {
                 output_file = output_file,
                 short = "PASSED | removeFavoriteMovie",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName"] = {
+            ["tests/Feature/UserTest.php::tellName"] = {
                 output_file = output_file,
                 short = "PASSED | tellName",
                 status = "passed"
             },
-            ["/Users/michaelutz/Code/neotest-pest/tests/Unit/ExampleTest.php::example"] = {
+            ["tests/Unit/ExampleTest.php::example"] = {
                 output_file = output_file,
                 short = "PASSED | example",
                 status = "passed"
@@ -173,7 +173,7 @@ describe("get_test_results", function()
                         assertions = "3",
                         errors = "0",
                         failures = "0",
-                        name = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                        name = "tests/Feature/UserTest.php",
                         skipped = "0",
                         tests = "1",
                         time = "0.004366",
@@ -184,7 +184,7 @@ describe("get_test_results", function()
                             assertions = "3",
                             errors = "0",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            file = "tests/Feature/UserTest.php",
                             name = "P\\Tests\\Feature\\UserTest",
                             skipped = "0",
                             tests = "1",
@@ -196,7 +196,7 @@ describe("get_test_results", function()
                                 assertions = "3",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "addFavoriteMovie",
                                 time = "0.004366"
                             }
@@ -207,7 +207,7 @@ describe("get_test_results", function()
         }
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::addFavoriteMovie"] = {
+            ["tests/Feature/UserTest.php::addFavoriteMovie"] = {
                 output_file = output_file,
                 short = "PASSED | addFavoriteMovie",
                 status = "passed"
@@ -236,7 +236,7 @@ describe("get_test_results", function()
                             assertions = "1",
                             errors = "0",
                             failures = "1",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            file = "tests/Feature/UserTest.php",
                             name = "P\\Tests\\Feature\\UserTest",
                             skipped = "0",
                             tests = "1",
@@ -248,11 +248,11 @@ describe("get_test_results", function()
                                 assertions = "1",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "is false",
                                 time = "0.004215"
                             },
-                            failure = { "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::it is false\nFailed asserting that true is false.\n\n/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php:39\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Expectation.php:316\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/Reflection.php:38\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/HigherOrderMessage.php:96\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/HigherOrderMessageCollection.php:43\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Factories/TestCaseFactory.php:148\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:302\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/ExceptionTrace.php:29\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:303\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:279\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Console/Command.php:119\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:62\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:63",
+                            failure = { "tests/Feature/UserTest.php::it is false\nFailed asserting that true is false.\n\ntests/Feature/UserTest.php:39\nvendor/pestphp/pest/src/Expectation.php:316\nvendor/pestphp/pest/src/Support/Reflection.php:38\nvendor/pestphp/pest/src/Support/HigherOrderMessage.php:96\nvendor/pestphp/pest/src/Support/HigherOrderMessageCollection.php:43\nvendor/pestphp/pest/src/Factories/TestCaseFactory.php:148\nvendor/pestphp/pest/src/Concerns/Testable.php:302\nvendor/pestphp/pest/src/Support/ExceptionTrace.php:29\nvendor/pestphp/pest/src/Concerns/Testable.php:303\nvendor/pestphp/pest/src/Concerns/Testable.php:279\nvendor/pestphp/pest/src/Console/Command.php:119\nvendor/pestphp/pest/bin/pest:62\nvendor/pestphp/pest/bin/pest:63",
                                 _attr = {
                                     type = "PHPUnit\\Framework\\ExpectationFailedException"
                                 }
@@ -263,10 +263,10 @@ describe("get_test_results", function()
             }
         }
 
-        local message = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::it is false\nFailed asserting that true is false.\n\n/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php:39\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Expectation.php:316\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/Reflection.php:38\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/HigherOrderMessage.php:96\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/HigherOrderMessageCollection.php:43\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Factories/TestCaseFactory.php:148\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:302\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/ExceptionTrace.php:29\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:303\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:279\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Console/Command.php:119\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:62\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:63"
+        local message = "tests/Feature/UserTest.php::it is false\nFailed asserting that true is false.\n\ntests/Feature/UserTest.php:39\nvendor/pestphp/pest/src/Expectation.php:316\nvendor/pestphp/pest/src/Support/Reflection.php:38\nvendor/pestphp/pest/src/Support/HigherOrderMessage.php:96\nvendor/pestphp/pest/src/Support/HigherOrderMessageCollection.php:43\nvendor/pestphp/pest/src/Factories/TestCaseFactory.php:148\nvendor/pestphp/pest/src/Concerns/Testable.php:302\nvendor/pestphp/pest/src/Support/ExceptionTrace.php:29\nvendor/pestphp/pest/src/Concerns/Testable.php:303\nvendor/pestphp/pest/src/Concerns/Testable.php:279\nvendor/pestphp/pest/src/Console/Command.php:119\nvendor/pestphp/pest/bin/pest:62\nvendor/pestphp/pest/bin/pest:63"
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::is false"] = {
+            ["tests/Feature/UserTest.php::is false"] = {
                 errors = { { message = message } },
                 output_file = output_file,
                 status = "failed",
@@ -275,7 +275,7 @@ describe("get_test_results", function()
         }
 
         local results = utils.get_test_results(xml_output, output_file)
-        local key = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::is false"
+        local key = "tests/Feature/UserTest.php::is false"
 
         assert.are.same(results[key].errors[1].message, expected[key].errors[1].message)
         assert.are.same(results, expected)
@@ -300,7 +300,7 @@ describe("get_test_results", function()
                             assertions = "0",
                             errors = "1",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            file = "tests/Feature/UserTest.php",
                             name = "P\\Tests\\Feature\\UserTest",
                             skipped = "0",
                             tests = "1",
@@ -312,11 +312,11 @@ describe("get_test_results", function()
                                 assertions = "0",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "tellName",
                                 time = "0.002610"
                             },
-                            error = { "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName\nException: Oops!\n\n/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php:24\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Factories/TestCaseFactory.php:151\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:302\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/ExceptionTrace.php:29\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:303\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:279\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Console/Command.php:119\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:62\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:63",
+                            error = { "tests/Feature/UserTest.php::tellName\nException: Oops!\n\ntests/Feature/UserTest.php:24\nvendor/pestphp/pest/src/Factories/TestCaseFactory.php:151\nvendor/pestphp/pest/src/Concerns/Testable.php:302\nvendor/pestphp/pest/src/Support/ExceptionTrace.php:29\nvendor/pestphp/pest/src/Concerns/Testable.php:303\nvendor/pestphp/pest/src/Concerns/Testable.php:279\nvendor/pestphp/pest/src/Console/Command.php:119\nvendor/pestphp/pest/bin/pest:62\nvendor/pestphp/pest/bin/pest:63",
                                 _attr = {
                                     type = "Exception"
                                 }
@@ -327,10 +327,10 @@ describe("get_test_results", function()
             }
         }
 
-        local message = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName\nException: Oops!\n\n/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php:24\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Factories/TestCaseFactory.php:151\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:302\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Support/ExceptionTrace.php:29\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:303\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Concerns/Testable.php:279\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/src/Console/Command.php:119\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:62\n/Users/michaelutz/Code/neotest-pest/vendor/pestphp/pest/bin/pest:63"
+        local message = "tests/Feature/UserTest.php::tellName\nException: Oops!\n\ntests/Feature/UserTest.php:24\nvendor/pestphp/pest/src/Factories/TestCaseFactory.php:151\nvendor/pestphp/pest/src/Concerns/Testable.php:302\nvendor/pestphp/pest/src/Support/ExceptionTrace.php:29\nvendor/pestphp/pest/src/Concerns/Testable.php:303\nvendor/pestphp/pest/src/Concerns/Testable.php:279\nvendor/pestphp/pest/src/Console/Command.php:119\nvendor/pestphp/pest/bin/pest:62\nvendor/pestphp/pest/bin/pest:63"
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::tellName"] = {
+            ["tests/Feature/UserTest.php::tellName"] = {
                 errors = { { message = message } },
                 output_file = output_file,
                 status = "failed",
@@ -361,7 +361,7 @@ describe("get_test_results", function()
                             assertions = "0",
                             errors = "0",
                             failures = "0",
-                            file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                            file = "tests/Feature/UserTest.php",
                             name = "P\\Tests\\Feature\\UserTest",
                             skipped = "1",
                             tests = "1",
@@ -373,7 +373,7 @@ describe("get_test_results", function()
                                 assertions = "0",
                                 class = "Tests\\Feature\\UserTest",
                                 classname = "Tests.Feature.UserTest",
-                                file = "/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php",
+                                file = "tests/Feature/UserTest.php",
                                 name = "skipped",
                                 time = "0.001544"
                             },
@@ -385,7 +385,7 @@ describe("get_test_results", function()
         }
 
         local expected = {
-            ["/Users/michaelutz/Code/neotest-pest/tests/Feature/UserTest.php::skipped"] = {
+            ["tests/Feature/UserTest.php::skipped"] = {
                 output_file = output_file,
                 short = "SKIPPED | skipped",
                 status = "skipped"
