@@ -67,7 +67,7 @@ end
 local function make_outputs(test, output_file)
     logger.debug("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
-    local name = string.gsub(test_attr.name, "it (.*)", "%1")
+    local name = string.gsub(test_attr.name, "^it (.*)", "%1")
 
     -- Difference to neotest-phpunit as of PHPUnit 10:
     -- Pest's test IDs are in the format "path/to/test/file::test name"
