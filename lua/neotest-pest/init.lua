@@ -1,7 +1,22 @@
 local lib = require('neotest.lib')
-local async = require('neotest.async')
 local logger = require('neotest.logging')
 local utils = require('neotest-pest.utils')
+local config = require('neotest-pest.config')
+local debug = logger.debug
+
+local notify = function(msg, level)
+    vim.notify(msg, level, {
+        title = "neotest-pest",
+    })
+end
+
+local error = function(msg)
+    notify(msg, "error")
+end
+
+local info = function(msg)
+    notify(msg, "info")
+end
 
 ---@class neotest.Adapter
 ---@field name string
@@ -13,7 +28,37 @@ local NeotestAdapter = { name = "neotest-pest" }
 ---@async
 ---@param dir string @Directory to treat as cwd
 ---@return string | nil @Absolute root dir of test suite
-NeotestAdapter.root = lib.files.match_root_pattern("tests/Pest.php")
+function NeotestAdapter.root(dir)
+    local result = nil
+
+    debug("Finding root...")
+
+    for _, root_ignore_file in ipairs(config("root_ignore_files")) do
+        debug("Checking root ignore file", root_ignore_file)
+
+        result = lib.files.match_root_pattern(root_ignore_file)(dir)
+
+        if result then
+            debug("Ignoring root because file", root_ignore_file)
+            return nil
+        end
+    end
+
+    for _, root_file in ipairs(config("root_files")) do
+        debug("Checking root file", root_file)
+
+        result = lib.files.match_root_pattern(root_file)(dir)
+
+        if result then
+            debug("Found root", result)
+            break
+        end
+    end
+
+    debug("Root not found")
+
+    return result
+end
 
 ---Filter directories when searching for test files
 ---@async
@@ -22,14 +67,22 @@ NeotestAdapter.root = lib.files.match_root_pattern("tests/Pest.php")
 ---@param root string Root directory of project
 ---@return boolean True when matching
 function NeotestAdapter.filter_dir(name, rel_path, root)
-    return vim.startswith(rel_path, "tests")
+    for _, filter_dir in ipairs(config("ignore_dirs")) do
+        if name == filter_dir then return false end
+    end
+
+    return true
 end
 
 ---@async
 ---@param file_path string
 ---@return boolean
 function NeotestAdapter.is_test_file(file_path)
-    return vim.endswith(file_path, "Test.php")
+    for _, suffix in ipairs(config("test_file_suffixes")) do
+        if vim.endswith(file_path, suffix) then return true end
+    end
+
+    return false
 end
 
 function NeotestAdapter.discover_positions(path)
@@ -52,56 +105,55 @@ function NeotestAdapter.discover_positions(path)
     })
 end
 
-local function get_pest_cmd()
-    local binary = "pest"
-
-    if vim.fn.filereadable("vendor/bin/pest") == 1 then
-        binary = "vendor/bin/pest"
-    end
-
-    return binary
-end
-
-local is_callable = function(obj)
-    return type(obj) == "function" or (type(obj) == "table" and obj.__call)
-end
-
 ---@param args neotest.RunArgs
 ---@return neotest.RunSpec | nil
 function NeotestAdapter.build_spec(args)
     local position = args.tree:data()
-    local results_path = "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
+    local results_path = config('results_path')
 
-    local binary = get_pest_cmd()
+    debug("Building spec for:", position)
+    debug("Results path:", results_path)
 
-    local command = {}
+    local path = position.path;
 
-    if vim.fn.filereadable("vendor/bin/sail") == 1 then
-        command = vim.tbl_flatten({
-            "vendor/bin/sail", "bin", "pest",
-            position.name ~= "tests" and ("/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd()) + 1)),
-            "--log-junit=" .. results_path,
-        })
-    else
-        command = vim.tbl_flatten({
-            binary,
-            position.name ~= "tests" and position.path,
-            "--log-junit=" .. results_path,
-        })
+    if config('sail_enabled') then
+        debug("Sail enabled, adjusting path")
+        path = "/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
     end
 
+    local command = vim.tbl_flatten({
+        config('pest_cmd'),
+        path,
+        "--log-junit=" .. results_path,
+    })
 
     if position.type == "test" then
-        local script_args = vim.tbl_flatten({
+        command = vim.tbl_flatten({
+            command,
             "--filter",
             position.name,
         })
+    else
+        debug("Position type:", position.type)
+    end
 
+    if config('is_parallel') then
         command = vim.tbl_flatten({
             command,
-            script_args,
+            "--parallel",
+            "--processes=" .. config('parallel'),
         })
     end
+
+    if config('compact') == true then
+        info("Using compact output")
+        command = vim.tbl_flatten({
+            command,
+            "--compact",
+        })
+    end
+
+    debug("Command:", command)
 
     return {
         command = command,
@@ -121,18 +173,21 @@ function NeotestAdapter.results(test, result, tree)
 
     local ok, data = pcall(lib.files.read, output_file)
     if not ok then
+        error("No test output file found! Should have been at: " .. output_file)
         logger.error("No test output file found:", output_file)
         return {}
     end
 
     local ok, parsed_data = pcall(lib.xml.parse, data)
     if not ok then
+        error("Failed to parse test output!")
         logger.error("Failed to parse test output:", output_file)
         return {}
     end
 
     local ok, results = pcall(utils.get_test_results, parsed_data, output_file)
     if not ok then
+        error("Could not get test results!")
         logger.error("Could not get test results", output_file)
         return {}
     end
@@ -142,13 +197,8 @@ end
 
 setmetatable(NeotestAdapter, {
     __call = function(_, opts)
-        if is_callable(opts.pest_cmd) then
-            get_pest_cmd = opts.pest_cmd
-        elseif opts.pest_cmd then
-            get_pest_cmd = function()
-                return opts.pest_cmd
-            end
-        end
+        config.merge(opts or {})
+
         return NeotestAdapter
     end,
 })
