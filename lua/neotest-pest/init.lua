@@ -134,16 +134,15 @@ function NeotestAdapter.build_spec(args)
             position.name,
         })
     else
-        debug("Position type:", position.type)
+        if config('is_parallel') then
+            command = vim.tbl_flatten({
+                command,
+                "--parallel",
+                "--processes=" .. config('parallel'),
+            })
+        end
     end
 
-    if config('is_parallel') then
-        command = vim.tbl_flatten({
-            command,
-            "--parallel",
-            "--processes=" .. config('parallel'),
-        })
-    end
 
     if config('compact') == true then
         info("Using compact output")
