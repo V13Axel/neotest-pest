@@ -40,5 +40,6 @@ luac.out
 *.hex
 
 
+packpath
 vendor
 .phpunit.result.cache
