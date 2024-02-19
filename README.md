@@ -39,7 +39,7 @@ Here's an example using lazy.nvim:
 
 > [!TIP]
 > Any of these options can be set to a lua function that returns the desired result. For example, wanna run tests in parallel, one for each CPU core?
-> `parallel = function() #vim.loop.cpu_info() end`
+> `parallel = function() return #vim.loop.cpu_info() end,`
 
 ```lua
 adapters = {
