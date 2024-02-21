@@ -4,20 +4,6 @@ local utils = require('neotest-pest.utils')
 local config = require('neotest-pest.config')
 local debug = logger.debug
 
-local notify = function(msg, level)
-    vim.notify(msg, level, {
-        title = "neotest-pest",
-    })
-end
-
-local error = function(msg)
-    notify(msg, "error")
-end
-
-local info = function(msg)
-    notify(msg, "info")
-end
-
 ---@class neotest.Adapter
 ---@field name string
 local NeotestAdapter = { name = "neotest-pest" }

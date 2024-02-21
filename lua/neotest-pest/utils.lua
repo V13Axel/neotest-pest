@@ -5,7 +5,6 @@ local separator = "::"
 
 ---Generate an id which we can use to match Treesitter queries and Pest tests
 ---@param position neotest.Position The position to return an ID for
----@param namespace neotest.Position[] Any namespaces the position is within
 ---@return string
 M.make_test_id = function(position)
     -- Treesitter ID needs to look like 'tests/Unit/ColsHelperTest.php::it returns the proper format'
@@ -63,7 +62,7 @@ end
 ---Make the outputs for a given test
 ---@param test table
 ---@param output_file string
----@return table
+---@return string, table
 local function make_outputs(test, output_file)
     logger.debug("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
