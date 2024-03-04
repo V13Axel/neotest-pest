@@ -48,7 +48,7 @@ end
 
 function M.env.results_path()
     if M('sail_enabled') then
-        return "storage/app/" .. os.date("junit-%Y%m%d-%H%M%S")
+        return "storage/app/" .. os.date("pest-%Y%m%d-%H%M%S")
     end
 
     return async.fn.tempname()
@@ -59,7 +59,7 @@ function M.sail_error()
 end
 
 function M.sail_available()
-    if vim.fn.filereadable(M('sail_executable')) == 1 then
+    if (vim.fn.filereadable(M('sail_executable')) == 1) and (vim.fn.filereadable("docker-compose.yml") == 1) then
         M._sail_enabled = true
         return true
     end
