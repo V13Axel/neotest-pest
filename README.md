@@ -58,7 +58,7 @@ adapters = {
 
         -- Sail not properly detected? Explicitly enable it.
         -- -- Default: function() that checks for sail presence
-        sail_enabled = false,
+        sail_enabled = function() return false end,
 
         -- Custom sail executable. Not running in Sail, but running bare Docker?
         -- Set `sail_enabled` = true and `sail_executable` to { "docker", "exec", "[somecontainer]" }
