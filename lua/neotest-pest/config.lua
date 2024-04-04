@@ -15,6 +15,7 @@ local M = {
         ignore_dirs = { "vendor", "node_modules" },
         test_file_suffixes = { "Test.php" },
         sail_executable = "vendor/bin/sail",
+        sail_project_path = "/var/www/html",
         parallel = 0,
         compact = false,
     },
