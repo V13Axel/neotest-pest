@@ -104,7 +104,7 @@ function NeotestAdapter.build_spec(args)
 
     if config('sail_enabled') then
         debug("Sail enabled, adjusting path")
-        path = "/var/www/html" .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
+        path = config('sail_project_path') .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
     end
 
     local command = vim.tbl_flatten({
