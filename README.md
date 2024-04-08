@@ -65,6 +65,10 @@ adapters = {
         -- -- Default: "vendor/bin/sail"
         sail_executable = "vendor/bin/sail",
 
+        -- Custom sail project root path.
+        -- -- Default: "/var/www/html"
+        sail_project_path = "/var/www/html",
+
         -- Custom pest binary.
         -- -- Default: function that checks for sail presence
         pest_cmd = "vendor/bin/pest",
