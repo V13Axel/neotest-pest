@@ -76,13 +76,13 @@ function NeotestAdapter.discover_positions(path)
         ((expression_statement
             (member_call_expression
                 name: (name) @member_name (#eq? @member_name "group")
-                arguments: (arguments . (argument (string (string_value) @namespace.name)))
+                arguments: (arguments . (argument (string (string_content) @namespace.name)))
             ) @member
         )) @namespace.definition
 
         ((function_call_expression
             function: (name) @func_name (#match? @func_name "^(test|it)$")
-            arguments: (arguments . (argument (string (string_value) @test.name)))
+            arguments: (arguments . (argument (string (string_content) @test.name)))
         )) @test.definition
     ]]
 
