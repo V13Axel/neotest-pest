@@ -2,13 +2,14 @@
 tempfile=".test_output.tmp"
 
 # Create packpath directory
-mkdir -p packpath
+mkdir -p packpath/pack/manual/opt
 
 # Need to clone these plugins to run tests:
 git -C packpath/pack/manual/opt/plenary.nvim pull || git clone https://github.com/nvim-lua/plenary.nvim.git ./packpath/pack/manual/opt/plenary.nvim
 git -C packpath/pack/manual/opt/neotest pull || git clone https://github.com/nvim-neotest/neotest.git ./packpath/pack/manual/opt/neotest
 git -C packpath/pack/manual/opt/neotest-plenary pull || git clone https://github.com/nvim-neotest/neotest-plenary.git ./packpath/pack/manual/opt/neotest-plenary
 git -C packpath/pack/manual/opt/nvim-treesitter pull || git clone https://github.com/nvim-treesitter/nvim-treesitter.git ./packpath/pack/manual/opt/nvim-treesitter
+git -C packpath/pack/manual/opt/nvim-nio pull || git clone https://github.com/nvim-neotest/nvim-nio.git ./packpath/pack/manual/opt/nvim-nio
 
 # Run tests
 if [[ -n $1 ]]; then

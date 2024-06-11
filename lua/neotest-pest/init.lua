@@ -82,8 +82,16 @@ function NeotestAdapter.discover_positions(path)
 
         ((function_call_expression
             function: (name) @func_name (#match? @func_name "^(test|it)$")
-            arguments: (arguments . (argument (string (string_content) @test.name)))
+            arguments: (arguments . (argument (_ (string_content) @test.name)))
         )) @test.definition
+
+        ((expression_statement
+            (member_call_expression
+                object: (#eq? @test.definition)
+                name: (name) @member_call_name (#match? @member_call_name "^(with)$")
+                arguments: (arguments . (argument (array_creation_expression (array_element_initializer (array_creation_expression (array_element_initializer (_) @test.parameter .) )))))
+            )
+        ))
     ]]
 
     return lib.treesitter.parse_positions(path, query, {
