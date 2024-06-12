@@ -72,6 +72,15 @@ function NeotestAdapter.is_test_file(file_path)
 end
 
 function NeotestAdapter.discover_positions(path)
+    -- Tree-sitter query, as follows:
+    -- 1. Pest namespace definition
+    -- 2. Pest single test definition
+    -- 3. Pest parameterized test definition
+    -- 4. PHPUnit namespace definition
+    -- 5. PHPUnit test definition (With attributes)
+    -- 6. PHPUnit test definition (without attributes)
+    -- 7. PHPUnit test definition (with comment)
+    --
     -- ;;scheme
     local query = [[
         ((expression_statement
