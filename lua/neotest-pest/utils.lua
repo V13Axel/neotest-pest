@@ -14,7 +14,7 @@ M.make_test_id = function(position)
     local path = string.sub(position.path, string.len(vim.loop.cwd()) + 2)
 
     local id = path .. separator .. position.name
-    logger.debug("Path to test file:", { position.path })
+    logger.debug("Position", { position })
     logger.debug("Treesitter id:", { id })
 
     return id
