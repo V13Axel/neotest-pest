@@ -4,7 +4,7 @@ local M = {}
 local separator = "::"
 
 local function starts_with(str, start)
-   return str:sub(1, #start) == start
+    return str:sub(1, #start) == start
 end
 
 local function is_phpunit_test(position)
@@ -15,7 +15,8 @@ local function is_phpunit_test(position)
 
     if position.name:sub(5, 5) ~= string.upper(position.name:sub(5, 5)) then
         logger.debug("Test name isn't camel case:")
-        logger.debug("'" .. position.name:sub(5, 5) .. "' doesn't match '" .. string.upper(position.name:sub(5, 5)) .. "'")
+        logger.debug("'" ..
+            position.name:sub(5, 5) .. "' doesn't match '" .. string.upper(position.name:sub(5, 5)) .. "'")
         return false
     end
 
@@ -34,7 +35,21 @@ M.make_test_id = function(position)
     if is_phpunit_test(position) then
         logger.debug("Test " .. position.name .. " appears to be a PHPUnit test.")
 
-        local id = position.path .. separator .. (tonumber(position.range[1]) + 1)
+        local pathparts = {}
+        local foundtests = false
+        for dir in position.path:gmatch("([^/]+)") do
+            if dir == "tests" then
+                foundtests = true
+            end
+
+            if foundtests then
+                table.insert(pathparts, dir)
+            end
+        end
+
+        local testName = position.name:gsub(" (.)", string.upper)
+
+        local id = table.concat(pathparts, "/") .. separator .. testName
 
         logger.info("PHPUnit Position", { position })
         logger.info("Treesitter id:", { id })
@@ -105,7 +120,10 @@ local function make_outputs(test, output_file)
     local test_id = ""
 
     if string.find(test_attr.file, "(", 1, true) and string.find(test_attr.file, ")::", 1, true) then
-        test_id = "t" ..  string.gsub(test_attr.file, ".*%((.*)%)::(.*)", "%1"):sub(2) .. ".php" .. separator .. name
+        name = "test" .. name:gsub(" (.)", string.upper)
+        test_id = "t" .. test_attr.class:sub(2) .. ".php" .. separator .. name
+
+        test_id = string.gsub(test_id, "\\", "/")
 
         logger.debug("PHPUnit id: ", { test_id })
     else
