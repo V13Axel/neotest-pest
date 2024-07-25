@@ -41,7 +41,9 @@ function NeotestAdapter.root(dir)
         end
     end
 
-    debug("Root not found")
+    if not result then
+        debug("Root not found")
+    end
 
     return result
 end
