@@ -20,6 +20,35 @@ M.make_test_id = function(position)
     return id
 end
 
+local function get_match_type(captured_nodes)
+  if captured_nodes["test.name"] then
+    return "test"
+  end
+  if captured_nodes["namespace.name"] then
+    return "namespace"
+  end
+end
+
+M.build_position = function(file_path, source, captured_nodes)
+    local match_type = get_match_type(captured_nodes)
+    if not match_type then
+        return
+    end
+
+    local name = vim.treesitter.get_node_text(captured_nodes[match_type .. ".name"], source)
+    local definition = captured_nodes[match_type .. ".definition"]
+
+    logger.debug(captured_nodes)
+
+    return {
+        type = match_type,
+        path = file_path,
+        name = name,
+        range = { definition:range() },
+        is_parameterized = captured_nodes["with_call"] and true or false,
+    }
+end
+
 ---Recursively iterate through a deeply nested table to obtain specified keys
 ---@param data_table table
 ---@param key string

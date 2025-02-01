@@ -80,23 +80,37 @@ function NeotestAdapter.discover_positions(path)
             ) @member
         )) @namespace.definition
 
-        ((function_call_expression
-            function: (name) @func_name (#match? @func_name "^(test|it)$")
-            arguments: (arguments . (argument (_ (string_content) @test.name)))
-        )) @test.definition
+        ((expression_statement 
+           (function_call_expression
+             function: (name) @func_name (#match? @func_name "^(test|it)$")
+             arguments: (arguments . (argument (_ (string_content) @test.name)))
+             )
+       )) @test.definition
 
         ((expression_statement
             (member_call_expression
-                object: (#eq? @test.definition)
-                name: (name) @member_call_name (#match? @member_call_name "^(with)$")
+                object: ((function_call_expression
+                    function: (name) @func_name (#match? @func_name "^(test|it)$")
+                    arguments: (arguments . (argument (_ (string_content) @test.name)))
+                ))
+                name: (name) @with_call (#match? @with_call "^(with)$")
                 arguments: (arguments . (argument (array_creation_expression (array_element_initializer (array_creation_expression (array_element_initializer (_) @test.parameter .) )))))
             )
-        ))
+        )) @test.definition
+
     ]]
 
-    return lib.treesitter.parse_positions(path, query, {
-        position_id = "require('neotest-pest.utils').make_test_id",
+    local positions = lib.treesitter.parse_positions(path, query, {
+        nested_tests = false,
+        build_position = "require('neotest-pest.utils').build_position",
     })
+
+    debug('---------------------')
+    debug(path)
+    debug(positions)
+    debug('---------------------')
+
+    return positions
 end
 
 ---@param args neotest.RunArgs
