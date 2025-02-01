@@ -29,6 +29,12 @@ local function get_match_type(captured_nodes)
   end
 end
 
+---Given a file path and the captured information for the treesitter query, build out the
+---position information for enriching with parameterized tests and use later by neotest
+---@param file_path string
+---@param source string|integer
+---@param captured_nodes table
+---@return table|nil
 M.build_position = function(file_path, source, captured_nodes)
     local match_type = get_match_type(captured_nodes)
     if not match_type then

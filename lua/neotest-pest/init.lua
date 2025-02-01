@@ -3,9 +3,9 @@ local logger = require('neotest.logging')
 local utils = require('neotest-pest.utils')
 local config = require('neotest-pest.config')
 local debug = logger.debug
+local parameterized_tests = require('neotest-pest.parameterized-tests')
 
 ---@class neotest.Adapter
----@field name string
 local NeotestAdapter = { name = "neotest-pest" }
 
 ---Find the project root directory given a current directory to work from.
@@ -72,7 +72,7 @@ function NeotestAdapter.is_test_file(file_path)
 end
 
 function NeotestAdapter.discover_positions(path)
-    local query = [[
+    local query                        = [[
         ((expression_statement
             (member_call_expression
                 name: (name) @member_name (#eq? @member_name "group")
@@ -80,7 +80,7 @@ function NeotestAdapter.discover_positions(path)
             ) @member
         )) @namespace.definition
 
-        ((expression_statement 
+        ((expression_statement
            (function_call_expression
              function: (name) @func_name (#match? @func_name "^(test|it)$")
              arguments: (arguments . (argument (_ (string_content) @test.name)))
@@ -100,15 +100,25 @@ function NeotestAdapter.discover_positions(path)
 
     ]]
 
-    local positions = lib.treesitter.parse_positions(path, query, {
+    local positions                    = lib.treesitter.parse_positions(path, query, {
         nested_tests = false,
         build_position = "require('neotest-pest.utils').build_position",
     })
 
-    debug('---------------------')
-    debug(path)
+    local parameterized_test_positions =
+        parameterized_tests.get_parameterized_test_positions(positions)
+
+    if #parameterized_test_positions > 0 then
+        parameterized_tests.enrich_positions_with_parameterized_tests(
+            positions:data().path,
+            parameterized_test_positions
+        )
+    end
+
+    debug('vvvvvvvvvvvvvvvvvvvvv')
     debug(positions)
-    debug('---------------------')
+    debug(parameterized_test_positions)
+    debug('^^^^^^^^^^^^^^^^^^^^^')
 
     return positions
 end
