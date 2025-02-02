@@ -109,6 +109,7 @@ function NeotestAdapter.discover_positions(path)
         parameterized_tests.get_parameterized_test_positions(positions)
 
     if #parameterized_test_positions > 0 then
+        debug("enriching positions of " .. path)
         parameterized_tests.enrich_positions_with_parameterized_tests(
             positions:data().path,
             parameterized_test_positions

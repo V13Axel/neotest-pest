@@ -20,6 +20,8 @@ M.run_pest_test_discovery = function(file_path)
         file_path,
     })
 
+    debug("Running command:")
+    debug(command)
     local result = { lib.process.run(command, { stdout = true }) }
 
     if not result[2] then
@@ -27,6 +29,7 @@ M.run_pest_test_discovery = function(file_path)
         debug(result)
     end
 
+    debug("Command finished running:")
     debug(result[2].stdout)
 end
 

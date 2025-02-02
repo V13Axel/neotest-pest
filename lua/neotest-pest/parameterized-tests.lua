@@ -1,3 +1,4 @@
+local debug = require("neotest.logging").debug
 local pest_control = require("neotest-pest.pest-control")
 
 local M = {}
@@ -9,6 +10,7 @@ function M.get_parameterized_test_positions(positions)
         local data = value:data()
 
         if data.type == "test" and data.is_parameterized == true then
+            debug("Found a parameterized test")
             parameterized_test_positions[#parameterized_test_positions + 1] = value
         end
     end
