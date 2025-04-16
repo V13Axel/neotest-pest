@@ -113,6 +113,10 @@ function NeotestAdapter.build_spec(args)
     if config('sail_enabled') then
         debug("Sail enabled, adjusting path")
         path = config('sail_project_path') .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
+
+        if position.type == "dir" then
+            path = ""
+        end
     end
 
     local command = vim.tbl_flatten({
