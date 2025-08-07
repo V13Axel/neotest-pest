@@ -72,6 +72,16 @@ function NeotestAdapter.is_test_file(file_path)
 end
 
 function NeotestAdapter.discover_positions(path)
+    -- Tree-sitter query, as follows:
+    -- 1. Pest namespace definition
+    -- 2. Pest single test definition
+    -- 3. Pest parameterized test definition
+    -- 4. PHPUnit namespace definition
+    -- 5. PHPUnit test definition (With attributes)
+    -- 6. PHPUnit test definition (without attributes)
+    -- 7. PHPUnit test definition (with comment)
+    --
+    -- ;;scheme
     local query = [[
         ((expression_statement
             (member_call_expression
@@ -91,6 +101,32 @@ function NeotestAdapter.discover_positions(path)
                 name: (name) @member_call_name (#match? @member_call_name "^(with)$")
                 arguments: (arguments . (argument (array_creation_expression (array_element_initializer (array_creation_expression (array_element_initializer (_) @test.parameter .) )))))
             )
+        ))
+
+        ((class_declaration
+          name: (name) @namespace.name (#match? @namespace.name "Test")
+        )) @namespace.definition
+
+        ((method_declaration
+          (attribute_list
+            (attribute_group
+                (attribute) @test_attribute (#match? @test_attribute "Test")
+            )
+          )
+          (
+            (visibility_modifier)
+            (name) @test.name
+          ) @test.definition
+         ))
+
+        ((method_declaration
+          (name) @test.name (#match? @test.name "test")
+        )) @test.definition
+
+        (((comment) @test_comment (#match? @test_comment "\\@test") .
+          (method_declaration
+            (name) @test.name
+          ) @test.definition
         ))
     ]]
 

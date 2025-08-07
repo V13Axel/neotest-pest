@@ -3,10 +3,60 @@ local logger = require("neotest.logging")
 local M = {}
 local separator = "::"
 
+local function starts_with(str, start)
+    return str:sub(1, #start) == start
+end
+
+local function is_phpunit_test(position)
+    if starts_with(position.name, 'test') ~= true then
+        logger.debug("Test name doesn't start with test")
+        return false
+    end
+
+    if position.name:sub(5, 5) ~= string.upper(position.name:sub(5, 5)) then
+        logger.debug("Test name isn't camel case:")
+        logger.debug("'" ..
+            position.name:sub(5, 5) .. "' doesn't match '" .. string.upper(position.name:sub(5, 5)) .. "'")
+        return false
+    end
+
+    if string.find(position.name, " ", 1, true) then
+        logger.debug("Test name contains spaces")
+        return false
+    end
+
+    return true
+end
+
 ---Generate an id which we can use to match Treesitter queries and Pest tests
 ---@param position neotest.Position The position to return an ID for
 ---@return string
 M.make_test_id = function(position)
+    if is_phpunit_test(position) then
+        logger.debug("Test " .. position.name .. " appears to be a PHPUnit test.")
+
+        local pathparts = {}
+        local foundtests = false
+        for dir in position.path:gmatch("([^/]+)") do
+            if dir == "tests" then
+                foundtests = true
+            end
+
+            if foundtests then
+                table.insert(pathparts, dir)
+            end
+        end
+
+        local testName = position.name:gsub(" (.)", string.upper)
+
+        local id = table.concat(pathparts, "/") .. separator .. testName
+
+        logger.info("PHPUnit Position", { position })
+        logger.info("Treesitter id:", { id })
+
+        return id
+    end
+
     -- Treesitter ID needs to look like 'tests/Unit/ColsHelperTest.php::it returns the proper format'
     -- which means it should include position.path. However, as of PHPUnit 10, position.path
     -- includes the root directory of the project, which breaks the ID matching.
@@ -14,7 +64,7 @@ M.make_test_id = function(position)
     local path = string.sub(position.path, string.len(vim.loop.cwd()) + 2)
 
     local id = path .. separator .. position.name
-    logger.debug("Path to test file:", { position.path })
+    logger.debug("Pest Position", { position })
     logger.debug("Treesitter id:", { id })
 
     return id
@@ -67,11 +117,21 @@ local function make_outputs(test, output_file)
     logger.debug("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
     local name = string.gsub(test_attr.name, "^it (.*)", "%1")
+    local test_id = ""
 
-    -- Difference to neotest-phpunit as of PHPUnit 10:
-    -- Pest's test IDs are in the format "path/to/test/file::test name"
-    local test_id = string.gsub(test_attr.file, "(.*)::(.*)", "%1") .. separator .. name
-    logger.debug("Pest id:", { test_id })
+    if string.find(test_attr.file, "(", 1, true) and string.find(test_attr.file, ")::", 1, true) then
+        name = "test" .. name:gsub(" (.)", string.upper)
+        test_id = "t" .. test_attr.class:sub(2) .. ".php" .. separator .. name
+
+        test_id = string.gsub(test_id, "\\", "/")
+
+        logger.debug("PHPUnit id: ", { test_id })
+    else
+        -- Difference to neotest-phpunit as of PHPUnit 10:
+        -- Pest's test IDs are in the format "path/to/test/file::test name"
+        test_id = string.gsub(test_attr.file, "(.*)::(.*)", "%1") .. separator .. name
+        logger.debug("Pest id:", { test_id })
+    end
 
     local test_output = {
         status = "passed",
