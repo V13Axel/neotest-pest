@@ -73,25 +73,23 @@ end
 
 function NeotestAdapter.discover_positions(path)
     local query = [[
-        ((expression_statement
-            (member_call_expression
-                name: (name) @member_name (#eq? @member_name "group")
-                arguments: (arguments . (argument (string (string_content) @namespace.name)))
-            ) @member
-        )) @namespace.definition
+        ; More flexible group definition
+        (member_call_expression
+            name: (name) @member_name (#eq? @member_name "group")
+            arguments: (arguments (argument (string (string_content) @namespace.name)))
+        ) @namespace.definition
 
-        ((function_call_expression
+        ; More flexible test definition  
+        (function_call_expression
             function: (name) @func_name (#match? @func_name "^(test|it)$")
-            arguments: (arguments . (argument (_ (string_content) @test.name)))
-        )) @test.definition
+            arguments: (arguments (argument (string (string_content) @test.name)))
+        ) @test.definition
 
-        ((expression_statement
-            (member_call_expression
-                object: (#eq? @test.definition)
-                name: (name) @member_call_name (#match? @member_call_name "^(with)$")
-                arguments: (arguments . (argument (array_creation_expression (array_element_initializer (array_creation_expression (array_element_initializer (_) @test.parameter .) )))))
-            )
-        ))
+        ; Simplified parameter matching
+        (member_call_expression
+            name: (name) @method_name (#eq? @method_name "with")
+            arguments: (arguments (argument (array_creation_expression) @test.parameters))
+        ) @test.with_parameters
     ]]
 
     return lib.treesitter.parse_positions(path, query, {
