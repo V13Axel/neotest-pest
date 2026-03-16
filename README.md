@@ -2,14 +2,15 @@
 
 This plugin provides a [Pest](https://pestphp.com) adapter for the [Neotest](https://github.com/nvim-neotest/neotest) framework.
 
-This is a fork of `neotest-pest` originally by [@theutz](https://github.com/theutz/neotest-pest), with some fixes and updates:
+This is a fork of `neotest-pest` originally by [@theutz](https://github.com/theutz/neotest-pest), with fixes and updates:
 
-- Updated to work with [Pest](https://pestphp.com) 2.0
+- Support for Pest 2, 3, and 4 (PHPUnit 10, 11, and 12)
+- Parameterized test support (`->with()` datasets, named datasets, `->repeat()`)
+- `describe()` block support (including nested describe blocks)
 - Support for (and automatic detection of) Laravel Sail
   - Note: This also moves junit output files into `storage/app/`
 - Parallel testing support
-
-:warning: _Ive only focused on making this work for me. Please test against your Pest tests_ :warning:
+- Compact output printer support
 
 ## :package: Installation
 
@@ -124,6 +125,50 @@ To test a directory run `lua require('neotest').run.run("path/to/directory")`
 #### Test suite
 
 To test the full test suite run `lua require('neotest').run.run({ suite = true })`
+
+## Supported test types
+
+The adapter supports the following Pest test patterns:
+
+```php
+// Basic tests
+it('does something', function () { ... });
+test('does something', function () { ... });
+
+// Parameterized tests with datasets
+it('handles values', function (int $value) { ... })->with([1, 2, 3]);
+
+// Named datasets
+it('handles values', function (int $value) { ... })->with([
+    'small' => 1,
+    'large' => 100,
+]);
+
+// Repeated tests
+it('is consistent', function () { ... })->repeat(3);
+
+// Describe blocks
+describe('Feature', function () {
+    it('works', function () { ... });
+});
+
+// Nested describe blocks
+describe('Outer', function () {
+    describe('Inner', function () {
+        it('works', function () { ... });
+    });
+});
+
+// Parameterized tests inside describe blocks
+describe('Math', function () {
+    it('adds', function (int $a, int $b, int $expected) { ... })->with([
+        [1, 2, 3],
+        [4, 5, 9],
+    ]);
+});
+```
+
+Running "nearest test" on a `describe()` line will run all tests inside that block, for example.
 
 ## :gift: Contributing
 
