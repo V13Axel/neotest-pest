@@ -342,6 +342,564 @@ describe("get_test_results", function()
         assert.are.same(utils.get_test_results(xml_output, output_file), expected)
     end)
 
+    it('parses parameterized tests with all datasets passing', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "2",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "2",
+                        time = "0.002671"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "2",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_handles_parameterized_values",
+                            skipped = "0",
+                            tests = "2",
+                            time = "0.002671"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles parameterized values with data set \"('parameter 1')\"",
+                                name = "it handles parameterized values with data set \"('parameter 1')\"",
+                                time = "0.002222"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles parameterized values with data set \"('parameter 2')\"",
+                                name = "it handles parameterized values with data set \"('parameter 2')\"",
+                                time = "0.000450"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles parameterized values"] = {
+                output_file = output_file,
+                short = "PASSED | handles parameterized values",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests where one dataset fails', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "2",
+                        errors = "0",
+                        failures = "1",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "2",
+                        time = "0.003906"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "2",
+                            errors = "0",
+                            failures = "1",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_has_a_failing_parameterized_test",
+                            skipped = "0",
+                            tests = "2",
+                            time = "0.003906"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it has a failing parameterized test with data set \"(1)\"",
+                                name = "it has a failing parameterized test with data set \"(1)\"",
+                                time = "0.000553"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it has a failing parameterized test with data set \"(2)\"",
+                                name = "it has a failing parameterized test with data set \"(2)\"",
+                                time = "0.003353"
+                            },
+                            failure = {
+                                "it has a failing parameterized test with data set \"(2)\"Failed asserting that 2 is identical to 1.\nat tests/Feature/ParameterizedTest.php:8",
+                                _attr = {
+                                    type = "PHPUnit\\Framework\\ExpectationFailedException"
+                                }
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local message = "it has a failing parameterized test with data set \"(2)\"Failed asserting that 2 is identical to 1.\nat tests/Feature/ParameterizedTest.php:8"
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::has a failing parameterized test"] = {
+                errors = { { message = message } },
+                output_file = output_file,
+                status = "failed",
+                short = "FAILED | has a failing parameterized test\n\n" .. message
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests using test() instead of it()', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "2",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "2",
+                        time = "0.001000"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "2",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_handles_parameterized_values",
+                            skipped = "0",
+                            tests = "2",
+                            time = "0.001000"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::handles parameterized values with data set \"('value 1')\"",
+                                name = "handles parameterized values with data set \"('value 1')\"",
+                                time = "0.000500"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::handles parameterized values with data set \"('value 2')\"",
+                                name = "handles parameterized values with data set \"('value 2')\"",
+                                time = "0.000500"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles parameterized values"] = {
+                output_file = output_file,
+                short = "PASSED | handles parameterized values",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests with named datasets', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "3",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "3",
+                        time = "0.001450"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "3",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_handles_named_datasets",
+                            skipped = "0",
+                            tests = "3",
+                            time = "0.001450"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles named datasets with data set \"dataset \"small number\"\"",
+                                name = "it handles named datasets with data set \"dataset \"small number\"\"",
+                                time = "0.000511"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles named datasets with data set \"dataset \"medium number\"\"",
+                                name = "it handles named datasets with data set \"dataset \"medium number\"\"",
+                                time = "0.000505"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles named datasets with data set \"dataset \"large number\"\"",
+                                name = "it handles named datasets with data set \"dataset \"large number\"\"",
+                                time = "0.000434"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles named datasets"] = {
+                output_file = output_file,
+                short = "PASSED | handles named datasets",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests with object datasets', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "2",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "2",
+                        time = "0.000907"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "2",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_handles_object_datasets",
+                            skipped = "0",
+                            tests = "2",
+                            time = "0.000907"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles object datasets with data set \"(stdClass) #1\"",
+                                name = "it handles object datasets with data set \"(stdClass) #1\"",
+                                time = "0.000479"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles object datasets with data set \"(stdClass) #2\"",
+                                name = "it handles object datasets with data set \"(stdClass) #2\"",
+                                time = "0.000428"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles object datasets"] = {
+                output_file = output_file,
+                short = "PASSED | handles object datasets",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests with a single dataset entry', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "1",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "1",
+                        time = "0.002494"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "1",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_handles_a_single_dataset_entry",
+                            skipped = "0",
+                            tests = "1",
+                            time = "0.002494"
+                        },
+                        testcase = {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles a single dataset entry with data set \"('only one')\"",
+                                name = "it handles a single dataset entry with data set \"('only one')\"",
+                                time = "0.002494"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles a single dataset entry"] = {
+                output_file = output_file,
+                short = "PASSED | handles a single dataset entry",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses parameterized tests with edge case strings in datasets', function()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "5",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "5",
+                        time = "0.002355"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "5",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_handles_edge_case_strings",
+                            skipped = "0",
+                            tests = "5",
+                            time = "0.002355"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles edge case strings with data set \"('')\"",
+                                name = "it handles edge case strings with data set \"('')\"",
+                                time = "0.000443"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles edge case strings with data set \"(' ')\"",
+                                name = "it handles edge case strings with data set \"(' ')\"",
+                                time = "0.000427"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles edge case strings with data set \"('string with \"quotes\"')\"",
+                                name = "it handles edge case strings with data set \"('string with \"quotes\"')\"",
+                                time = "0.000431"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles edge case strings with data set \"('string with 'single quotes'')\"",
+                                name = "it handles edge case strings with data set \"('string with 'single quotes'')\"",
+                                time = "0.000542"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it handles edge case strings with data set \"('line1line2')\"",
+                                name = "it handles edge case strings with data set \"('line1line2')\"",
+                                time = "0.000512"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::handles edge case strings"] = {
+                output_file = output_file,
+                short = "PASSED | handles edge case strings",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('parses repeated tests using ->repeat()', function()
+        -- Pest's ->repeat() produces the same "with data set" JUnit XML format as ->with()
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "3",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "3",
+                        time = "0.005610"
+                    },
+                    testsuite = {
+                        _attr = {
+                            assertions = "3",
+                            errors = "0",
+                            failures = "0",
+                            file = "tests/Feature/ParameterizedTest.php",
+                            name = "Tests\\Feature\\ParameterizedTest::__pest_evaluable_it_runs_repeatedly",
+                            skipped = "0",
+                            tests = "3",
+                            time = "0.005610"
+                        },
+                        testcase = { {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it runs repeatedly with data set \"(1)\"",
+                                name = "it runs repeatedly with data set \"(1)\"",
+                                time = "0.004672"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it runs repeatedly with data set \"(2)\"",
+                                name = "it runs repeatedly with data set \"(2)\"",
+                                time = "0.000487"
+                            }
+                        }, {
+                            _attr = {
+                                assertions = "1",
+                                class = "Tests\\Feature\\ParameterizedTest",
+                                classname = "Tests.Feature.ParameterizedTest",
+                                file = "tests/Feature/ParameterizedTest.php::it runs repeatedly with data set \"(3)\"",
+                                name = "it runs repeatedly with data set \"(3)\"",
+                                time = "0.000451"
+                            }
+                        } }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::runs repeatedly"] = {
+                output_file = output_file,
+                short = "PASSED | runs repeatedly",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
+    it('does not strip "with" from regular test names containing that word', function()
+        -- Regression test: a test named "works with normal assertions" should NOT
+        -- have "with" stripped from its name (only "with data set ..." is stripped)
+        local xml_output = {
+            testsuites = {
+                testsuite = {
+                    _attr = {
+                        assertions = "1",
+                        errors = "0",
+                        failures = "0",
+                        name = "Tests\\Feature\\ParameterizedTest",
+                        skipped = "0",
+                        tests = "1",
+                        time = "0.002596"
+                    },
+                    testcase = {
+                        _attr = {
+                            assertions = "1",
+                            class = "Tests\\Feature\\ParameterizedTest",
+                            classname = "Tests.Feature.ParameterizedTest",
+                            file = "tests/Feature/ParameterizedTest.php::it works with normal assertions",
+                            name = "it works with normal assertions",
+                            time = "0.002596"
+                        }
+                    }
+                }
+            }
+        }
+
+        local expected = {
+            ["tests/Feature/ParameterizedTest.php::works with normal assertions"] = {
+                output_file = output_file,
+                short = "PASSED | works with normal assertions",
+                status = "passed"
+            }
+        }
+
+        assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+    end)
+
     it('parses output with skipped tests', function()
         local xml_output = {
             testsuites = {

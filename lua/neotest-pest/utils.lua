@@ -55,8 +55,25 @@ local function errors_or_fails(tests)
     return failed, errors, fails
 end
 
-local function make_short_output(test_attr, status)
-    return string.upper(status) .. " | " .. test_attr.name
+local function make_short_output(name, status)
+    return string.upper(status) .. " | " .. name
+end
+
+---Strip the dataset suffix from a parameterized test name.
+---Pest appends ' with data set "(...)"' to parameterized test names in JUnit XML.
+---@param name string
+---@return string
+local function strip_dataset_suffix(name)
+    return (string.gsub(name, " with data set .*$", ""))
+end
+
+---Extract the file path from a Pest JUnit XML file attribute.
+---For parameterized tests, Pest appends "::test name with data set ..." to the file path.
+---@param file_attr string
+---@return string
+local function extract_file_path(file_attr)
+    local path = string.match(file_attr, "^(.-)::") or file_attr
+    return path
 end
 
 ---Make the outputs for a given test
@@ -66,16 +83,20 @@ end
 local function make_outputs(test, output_file)
     logger.debug("Pre-output test:", test)
     local test_attr = test["_attr"] or test[1]["_attr"]
-    local name = string.gsub(test_attr.name, "^it (.*)", "%1")
 
-    -- Difference to neotest-phpunit as of PHPUnit 10:
+    -- Extract just the file path (strip "::test name..." suffix from parameterized tests)
+    local file_path = extract_file_path(test_attr.file)
+
+    -- Strip "it " prefix (Pest adds this for it() tests) and dataset suffix
+    local name = strip_dataset_suffix(string.gsub(test_attr.name, "^it (.*)", "%1"))
+
     -- Pest's test IDs are in the format "path/to/test/file::test name"
-    local test_id = string.gsub(test_attr.file, "(.*)::(.*)", "%1") .. separator .. name
+    local test_id = file_path .. separator .. name
     logger.debug("Pest id:", { test_id })
 
     local test_output = {
         status = "passed",
-        short = make_short_output(test_attr, "passed"),
+        short = make_short_output(name, "passed"),
         output_file = output_file,
     }
 
@@ -87,7 +108,7 @@ local function make_outputs(test, output_file)
 
         if #errors > 0 then
             local message = errors[1][1]
-            test_output.short = make_short_output(test_attr, "error") .. "\n\n" .. message
+            test_output.short = make_short_output(name, "error") .. "\n\n" .. message
             test_output.errors = {
                 {
                     message = message
@@ -95,7 +116,7 @@ local function make_outputs(test, output_file)
             }
         elseif #fails > 0 then
             local message = fails[1][1]
-            test_output.short = make_short_output(test_attr, "failed") .. "\n\n" .. message
+            test_output.short = make_short_output(name, "failed") .. "\n\n" .. message
             test_output.errors = {
                 {
                     message = message
@@ -106,7 +127,7 @@ local function make_outputs(test, output_file)
 
     if test['skipped'] then
         test_output.status = "skipped"
-        test_output.short = make_short_output(test_attr, "skipped")
+        test_output.short = make_short_output(name, "skipped")
     end
 
     logger.debug("test_output:", test_output)
@@ -114,7 +135,9 @@ local function make_outputs(test, output_file)
     return test_id, test_output
 end
 
----Iterate through test results and create a table of test IDs and outputs
+---Iterate through test results and create a table of test IDs and outputs.
+---For parameterized tests, multiple dataset results map to the same test ID.
+---A "failed" result is never overwritten by a "passed" one.
 ---@param tests table
 ---@param output_file string
 ---@param output_table table
@@ -123,7 +146,10 @@ local function iterate_test_outputs(tests, output_file, output_table)
     for i = 1, #tests, 1 do
         if #tests[i] == 0 then
             local test_id, test_output = make_outputs(tests[i], output_file)
-            output_table[test_id] = test_output
+            local existing = output_table[test_id]
+            if not existing or existing.status ~= "failed" then
+                output_table[test_id] = test_output
+            end
         else
             iterate_test_outputs(tests[i], output_file, output_table)
         end

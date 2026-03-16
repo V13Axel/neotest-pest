@@ -43,3 +43,6 @@ luac.out
 packpath
 vendor
 .phpunit.result.cache
+.phpunit.cache
+.phpactor.json
+test_output.xml
