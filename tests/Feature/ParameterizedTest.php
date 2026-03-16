@@ -109,3 +109,46 @@ it('runs repeatedly', function () {
 it('works with normal assertions', function () {
     expect(true)->toBeTrue();
 });
+
+// Describe block (issue #19)
+describe('Describe Block', function () {
+    it('should work inside describe', function () {
+        expect(true)->toBeTrue();
+    });
+
+    it('should also work inside describe', function () {
+        expect(1)->toBe(1);
+    });
+
+    // Parameterized test inside describe
+    it('adds numbers', function (int $a, int $b, int $expected) {
+        expect($a + $b)->toBe($expected);
+    })->with([
+        [1, 2, 3],
+        [4, 5, 9],
+    ]);
+});
+
+// Nested describe blocks
+describe('Outer', function () {
+    describe('Inner', function () {
+        it('works when nested', function () {
+            expect(true)->toBeTrue();
+        });
+    });
+
+    it('works at outer level', function () {
+        expect(true)->toBeTrue();
+    });
+});
+
+// Describe block with a failing test
+describe('Failing Describe', function () {
+    it('passes inside failing describe', function () {
+        expect(true)->toBeTrue();
+    });
+
+    it('fails inside failing describe', function () {
+        expect(false)->toBeTrue();
+    });
+});

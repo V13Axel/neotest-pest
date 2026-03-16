@@ -59,6 +59,14 @@ local function make_short_output(name, status)
   return string.upper(status) .. " | " .. name
 end
 
+---Strip the describe block prefix from a test name.
+---Pest prepends "`Describe Name` → " to tests inside describe() blocks in JUnit XML.
+---@param name string
+---@return string
+local function strip_describe_prefix(name)
+  return (string.gsub(name, "^`.+` \xE2\x86\x92 ", ""))
+end
+
 ---Strip the dataset suffix from a parameterized test name.
 ---Pest appends ' with data set "(...)"' to parameterized test names in JUnit XML.
 ---@param name string
@@ -87,8 +95,8 @@ local function make_outputs(test, output_file)
   -- Extract just the file path (strip "::test name..." suffix from parameterized tests)
   local file_path = extract_file_path(test_attr.file)
 
-  -- Strip "it " prefix (Pest adds this for it() tests) and dataset suffix
-  local name = strip_dataset_suffix(string.gsub(test_attr.name, "^it (.*)", "%1"))
+  -- Strip describe prefix, "it " prefix, and dataset suffix (in that order)
+  local name = strip_dataset_suffix(string.gsub(strip_describe_prefix(test_attr.name), "^it (.*)", "%1"))
 
   -- Pest's test IDs are in the format "path/to/test/file::test name"
   local test_id = file_path .. separator .. name

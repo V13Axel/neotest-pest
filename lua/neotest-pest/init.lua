@@ -87,6 +87,11 @@ function NeotestAdapter.discover_positions(path)
         )) @namespace.definition
 
         ((function_call_expression
+            function: (name) @func_name (#eq? @func_name "describe")
+            arguments: (arguments . (argument (_ (string_content) @namespace.name)))
+        )) @namespace.definition
+
+        ((function_call_expression
             function: (name) @func_name (#match? @func_name "^(test|it)$")
             arguments: (arguments . (argument (_ (string_content) @test.name)))
         )) @test.definition
@@ -94,6 +99,7 @@ function NeotestAdapter.discover_positions(path)
 
   return lib.treesitter.parse_positions(path, query, {
     position_id = "require('neotest-pest.utils').make_test_id",
+    nested_namespaces = true,
   })
 end
 
@@ -123,13 +129,15 @@ function NeotestAdapter.build_spec(args)
     "--log-junit=" .. results_path,
   })
 
-  if position.type == "test" then
+  if position.type == "test" or position.type == "namespace" then
     command = vim.tbl_flatten({
       command,
       "--filter",
       position.name,
     })
-  else
+  end
+
+  if position.type ~= "test" then
     if config("is_parallel") then
       command = vim.tbl_flatten({
         command,

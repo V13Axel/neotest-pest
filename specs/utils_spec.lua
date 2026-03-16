@@ -940,6 +940,196 @@ describe("get_test_results", function()
     assert.are.same(expected, utils.get_test_results(xml_output, output_file))
   end)
 
+  it("parses tests inside a describe block", function()
+    local xml_output = {
+      testsuites = {
+        testsuite = {
+          _attr = {
+            assertions = "3",
+            errors = "0",
+            failures = "0",
+            file = "tests/Feature/DescribeTest.php",
+            name = "Tests\\Feature\\DescribeTest",
+            skipped = "0",
+            tests = "3",
+            time = "0.003912",
+          },
+          testcase = {
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\DescribeTest",
+                classname = "Tests.Feature.DescribeTest",
+                file = "tests/Feature/DescribeTest.php::`Describe Block` \xE2\x86\x92 it should work",
+                name = "`Describe Block` \xE2\x86\x92 it should work",
+                time = "0.002970",
+              },
+            },
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\DescribeTest",
+                classname = "Tests.Feature.DescribeTest",
+                file = "tests/Feature/DescribeTest.php::`Describe Block` \xE2\x86\x92 it should also work",
+                name = "`Describe Block` \xE2\x86\x92 it should also work",
+                time = "0.000560",
+              },
+            },
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\DescribeTest",
+                classname = "Tests.Feature.DescribeTest",
+                file = "tests/Feature/DescribeTest.php::it works without describe",
+                name = "it works without describe",
+                time = "0.000381",
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = {
+      ["tests/Feature/DescribeTest.php::should work"] = {
+        output_file = output_file,
+        short = "PASSED | should work",
+        status = "passed",
+      },
+      ["tests/Feature/DescribeTest.php::should also work"] = {
+        output_file = output_file,
+        short = "PASSED | should also work",
+        status = "passed",
+      },
+      ["tests/Feature/DescribeTest.php::works without describe"] = {
+        output_file = output_file,
+        short = "PASSED | works without describe",
+        status = "passed",
+      },
+    }
+
+    assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+  end)
+
+  it("parses tests inside nested describe blocks", function()
+    local xml_output = {
+      testsuites = {
+        testsuite = {
+          _attr = {
+            assertions = "2",
+            errors = "0",
+            failures = "0",
+            file = "tests/Feature/NestedDescribeTest.php",
+            name = "Tests\\Feature\\NestedDescribeTest",
+            skipped = "0",
+            tests = "2",
+            time = "0.003363",
+          },
+          testcase = {
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\NestedDescribeTest",
+                classname = "Tests.Feature.NestedDescribeTest",
+                file = "tests/Feature/NestedDescribeTest.php::`Inner` \xE2\x86\x92 it works nested",
+                name = "`Inner` \xE2\x86\x92 it works nested",
+                time = "0.002948",
+              },
+            },
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\NestedDescribeTest",
+                classname = "Tests.Feature.NestedDescribeTest",
+                file = "tests/Feature/NestedDescribeTest.php::it works at outer level",
+                name = "it works at outer level",
+                time = "0.000416",
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = {
+      ["tests/Feature/NestedDescribeTest.php::works nested"] = {
+        output_file = output_file,
+        short = "PASSED | works nested",
+        status = "passed",
+      },
+      ["tests/Feature/NestedDescribeTest.php::works at outer level"] = {
+        output_file = output_file,
+        short = "PASSED | works at outer level",
+        status = "passed",
+      },
+    }
+
+    assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+  end)
+
+  it("parses parameterized tests inside a describe block", function()
+    local xml_output = {
+      testsuites = {
+        testsuite = {
+          _attr = {
+            assertions = "2",
+            errors = "0",
+            failures = "0",
+            file = "tests/Feature/DescribeWithTest.php",
+            name = "Tests\\Feature\\DescribeWithTest",
+            skipped = "0",
+            tests = "2",
+            time = "0.002900",
+          },
+          testsuite = {
+            _attr = {
+              assertions = "2",
+              errors = "0",
+              failures = "0",
+              file = "tests/Feature/DescribeWithTest.php",
+              name = "Tests\\Feature\\DescribeWithTest::__pest_evaluable__Math__\xE2\x86\x92_it_adds_numbers",
+              skipped = "0",
+              tests = "2",
+              time = "0.002900",
+            },
+            testcase = {
+              {
+                _attr = {
+                  assertions = "1",
+                  class = "Tests\\Feature\\DescribeWithTest",
+                  classname = "Tests.Feature.DescribeWithTest",
+                  file = 'tests/Feature/DescribeWithTest.php::`Math` \xE2\x86\x92 it adds numbers with data set "(1, 2, 3)"',
+                  name = '`Math` \xE2\x86\x92 it adds numbers with data set "(1, 2, 3)"',
+                  time = "0.002442",
+                },
+              },
+              {
+                _attr = {
+                  assertions = "1",
+                  class = "Tests\\Feature\\DescribeWithTest",
+                  classname = "Tests.Feature.DescribeWithTest",
+                  file = 'tests/Feature/DescribeWithTest.php::`Math` \xE2\x86\x92 it adds numbers with data set "(4, 5, 9)"',
+                  name = '`Math` \xE2\x86\x92 it adds numbers with data set "(4, 5, 9)"',
+                  time = "0.000459",
+                },
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = {
+      ["tests/Feature/DescribeWithTest.php::adds numbers"] = {
+        output_file = output_file,
+        short = "PASSED | adds numbers",
+        status = "passed",
+      },
+    }
+
+    assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+  end)
+
   it("parses output with skipped tests", function()
     local xml_output = {
       testsuites = {
