@@ -1,6 +1,6 @@
 {
     "require-dev": {
-        "pestphp/pest": "^2.3",
+        "pestphp/pest": "^4.0",
         "phpstan/phpstan": "^1.9",
         "laravel/pint": "^1.2"
     },

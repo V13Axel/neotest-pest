@@ -1067,6 +1067,64 @@ describe("get_test_results", function()
     assert.are.same(expected, utils.get_test_results(xml_output, output_file))
   end)
 
+  it("parses tests inside nested describe blocks with full prefix (Pest v4 format)", function()
+    -- Pest v4 includes all describe levels in the prefix: `Outer` → `Inner` → it ...
+    -- (Pest v2 only included the innermost describe)
+    local xml_output = {
+      testsuites = {
+        testsuite = {
+          _attr = {
+            assertions = "2",
+            errors = "0",
+            failures = "0",
+            file = "tests/Feature/NestedDescribeTest.php",
+            name = "Tests\\Feature\\NestedDescribeTest",
+            skipped = "0",
+            tests = "2",
+            time = "0.003363",
+          },
+          testcase = {
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\NestedDescribeTest",
+                classname = "Tests.Feature.NestedDescribeTest",
+                file = "tests/Feature/NestedDescribeTest.php::`Outer` \xE2\x86\x92 `Inner` \xE2\x86\x92 it works nested",
+                name = "`Outer` \xE2\x86\x92 `Inner` \xE2\x86\x92 it works nested",
+                time = "0.002948",
+              },
+            },
+            {
+              _attr = {
+                assertions = "1",
+                class = "Tests\\Feature\\NestedDescribeTest",
+                classname = "Tests.Feature.NestedDescribeTest",
+                file = "tests/Feature/NestedDescribeTest.php::`Outer` \xE2\x86\x92 it works at outer level",
+                name = "`Outer` \xE2\x86\x92 it works at outer level",
+                time = "0.000416",
+              },
+            },
+          },
+        },
+      },
+    }
+
+    local expected = {
+      ["tests/Feature/NestedDescribeTest.php::works nested"] = {
+        output_file = output_file,
+        short = "PASSED | works nested",
+        status = "passed",
+      },
+      ["tests/Feature/NestedDescribeTest.php::works at outer level"] = {
+        output_file = output_file,
+        short = "PASSED | works at outer level",
+        status = "passed",
+      },
+    }
+
+    assert.are.same(expected, utils.get_test_results(xml_output, output_file))
+  end)
+
   it("parses parameterized tests inside a describe block", function()
     local xml_output = {
       testsuites = {
