@@ -119,7 +119,9 @@ function NeotestAdapter.build_spec(args)
     path = config("sail_project_path") .. string.sub(position.path, string.len(vim.loop.cwd() or "") + 1)
 
     if position.type == "dir" then
-      path = ""
+      -- Use relative path so Pest runs only this directory, not the whole suite.
+      -- Absolute container paths cause errors, and an empty string runs everything.
+      path = string.sub(position.path, string.len(vim.loop.cwd() or "") + 2)
     end
   end
 
